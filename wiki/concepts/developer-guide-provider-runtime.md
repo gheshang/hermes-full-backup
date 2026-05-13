@@ -1,0 +1,177 @@
+---
+title: Provider Runtime Resolution
+created: 2026-04-24
+updated: 2026-04-24
+type: concept
+tags: ["concept"]
+sources: [raw/articles/developer-guide-provider-runtime.md]
+---
+
+# Provider Runtime Resolution
+
+源文档：[Provider Runtime Resolution](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/developer-guide/provider-runtime.md)
+
+# Provider Runtime Resolution
+
+Hermes has a shared provider runtime resolver used across:
+
+- CLI
+- gateway
+- cron jobs
+- ACP
+- auxiliary model calls
+
+Primary implementation:
+
+- `hermes_cli/runtime_provider.py` — credential resolution, `_resolve_custom_runtime()`
+- `hermes_cli/auth.py` — provider registry, `resolve_provider()`
+- `hermes_cli/model_switch.py` — shared `/model` switch pipeline (CLI + gateway)
+- `agent/auxiliary_client.py` — auxiliary model routing
+
+If you are trying to add a new first-class inference provider, read [Adding Providers](./adding-providers.md) alongside this page.
+
+## Resolution precedence
+
+At a high level, provider resolution uses:
+
+1. explicit CLI/runtime request
+2. `config.yaml` model/provider config
+3. environment variables
+4. provider-specific defaults or auto resolution
+
+That ordering matters because Hermes treats the saved model/provider choice as the source of truth for normal runs. This prevents a stale shell export from silently overriding the endpoint a user last selected in `hermes model`....
+
+## Providers
+
+Current provider families include:
+
+- AI Gateway (Vercel)
+- OpenRouter
+- Nous Portal
+- OpenAI Codex
+- Copilot / Copilot ACP
+- Anthropic (native)
+- Google / Gemini
+- Alibaba / DashScope
+- DeepSeek
+- Z.AI
+- Kimi / Moonshot
+- MiniMax
+- MiniMax China
+- Kilo Code
+- Hugging Face
+- OpenCode Zen / OpenCode Go
+- Custom (`provider: custom`) — first-class provider for any OpenAI-compatible endpoint
+- Named custom providers (`custom_providers` list in config.yaml)...
+
+## Output of runtime resolution
+
+The runtime resolver returns data such as:
+
+- `provider`
+- `api_mode`
+- `base_url`
+- `api_key`
+- `source`
+- provider-specific metadata like expiry/refresh info...
+
+## Why this matters
+
+This resolver is the main reason Hermes can share auth/runtime logic between:
+
+- `hermes chat`
+- gateway message handling
+- cron jobs running in fresh sessions
+- ACP editor sessions
+- auxiliary model tasks...
+
+## AI Gateway
+
+Set `AI_GATEWAY_API_KEY` in `~/.hermes/.env` and run with `--provider ai-gateway`. Hermes fetches available models from the gateway's `/models` endpoint, filtering to language models with tool-use support....
+
+## OpenRouter, AI Gateway, and custom OpenAI-compatible base URLs
+
+Hermes contains logic to avoid leaking the wrong API key to a custom endpoint when multiple provider keys exist (e.g. `OPENROUTER_API_KEY`, `AI_GATEWAY_API_KEY`, and `OPENAI_API_KEY`).
+
+Each provider's API key is scoped to its own base URL:
+
+- `OPENROUTER_API_KEY` is only sent to `openrouter.ai` endpoints
+- `AI_GATEWAY_API_KEY` is only sent to `ai-gateway.vercel.sh` endpoints
+- `OPENAI_API_KEY` is used for custom endpoints and as a fallback
+
+Hermes also distinguishes between:
+
+- a real custom endpoint selected by the user
+- the OpenRouter fallback path used when no custom endpoint is configure...
+
+## Native Anthropic path
+
+Anthropic is not just "via OpenRouter" anymore.
+
+When provider resolution selects `anthropic`, Hermes uses:
+
+- `api_mode = anthropic_messages`
+- the native Anthropic Messages API
+- `agent/anthropic_adapter.py` for translation
+
+Credential resolution for native Anthropic now prefers refreshable Claude Code credentials over copied env tokens when both are present. In practice that means:
+
+- Claude Code credential files are treated as the preferred source when they include refreshable auth
+- manual `ANTHROPIC_TOKEN` / `CLAUDE_CODE_OAUTH_TOKEN` values still work as explicit overrides
+- Hermes prefl...
+
+## OpenAI Codex path
+
+Codex uses a separate Responses API path:
+
+- `api_mode = codex_responses`
+- dedicated credential resolution and auth store support...
+
+## Auxiliary model routing
+
+Auxiliary tasks such as:
+
+- vision
+- web extraction summarization
+- context compression summaries
+- session search summarization
+- skills hub operations
+- MCP helper operations
+- memory flushes
+
+can use their own provider/model routing rather than the main conversational model.
+
+When an auxiliary task is configured with provider `main`, Hermes resolves that through the same shared runtime path as normal chat. In practice that means:
+
+- env-driven custom endpoints still work
+- custom endpoints saved via `hermes model` / `config.yaml` also work
+- auxiliary routing can tell the difference between...
+
+## Fallback models
+
+Hermes supports a configured fallback model/provider pair, allowing runtime failover when the primary model encounters errors.
+
+### How it works internally
+
+1. **Storage**: `AIAgent.__init__` stores the `fallback_model` dict and sets `_fallback_activated = False`.
+
+2. **Trigger points**: `_try_activate_fallback()` is called from three places in the main retry loop in `run_agent.py`:
+   - After max retries on invalid API responses (None choices, missing content)
+   - On non-retryable client errors (HTTP 401, 403, 404)
+   - After max retries on transient errors (HTTP 429, 500, 502, 503)
+
+3. **Ac...
+
+## Related docs
+
+- [Agent Loop Internals](./agent-loop.md)
+- [ACP Internals](./acp-internals.md)
+- [Context Compression & Prompt Caching](./context-compression-and-caching.md)...
+
+## 关联
+
+- [[hermes-optional-skills-catalog]]
+- [[hermes-v0.11.0]]
+- [[hermes-bundled-skills-catalog]]
+- [[hermes-agent]]
+- [[messaging-telegram]]

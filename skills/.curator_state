@@ -1,0 +1,8 @@
+{
+  "last_report_path": "/home/hangskf/.hermes/logs/curator/20260510-114630",
+  "last_run_at": "2026-05-10T11:46:30.993974+00:00",
+  "last_run_duration_seconds": 0.927095,
+  "last_run_summary": "auto: no changes; llm: skipped (no candidates)",
+  "paused": false,
+  "run_count": 1
+}

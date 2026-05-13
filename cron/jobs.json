@@ -1,0 +1,250 @@
+{
+  "jobs": [
+    {
+      "id": "1c98c5dc724d",
+      "name": "自审-备份快照",
+      "prompt": "执行每日备份快照：\n```bash\nDATE=$(date +%Y-%m-%d)\nmkdir -p ~/.hermes/backups/$DATE\ncp ~/.hermes/memories/MEMORY.md ~/.hermes/backups/$DATE/MEMORY.md 2>/dev/null\ncp ~/.hermes/memories/USER.md ~/.hermes/backups/$DATE/USER.md 2>/dev/null\ncp -r ~/.hermes/skills/ ~/.hermes/backups/$DATE/skills/ 2>/dev/null\ncp ~/.hermes/config.yaml ~/.hermes/backups/$DATE/config.yaml 2>/dev/null\ncp ~/.hermes/SOUL.md ~/.hermes/backups/$DATE/SOUL.md 2>/dev/null\necho \"备份完成: ~/.hermes/backups/$DATE/\"\nls -la ~/.hermes/backups/$DATE/ 2>/dev/null\n```\n输出备份结果即可。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 2 * * *",
+        "display": "30 2 * * *"
+      },
+      "schedule_display": "30 2 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 18
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:30:58.183864+08:00",
+      "next_run_at": "2026-05-14T02:30:00+08:00",
+      "last_run_at": "2026-05-13T02:30:54.448437+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "7468248ebd6c",
+      "name": "自审-缓存清理",
+      "prompt": "执行缓存和磁盘清理：\n```bash\necho \"=== 磁盘使用 ===\"\ndf -h / | tail -1\n\necho \"=== uv缓存 ===\"\ndu -sh ~/.cache/uv/ 2>/dev/null\n\necho \"=== uv .tmp残留清理 ===\"\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d 2>/dev/null | wc -l\ndu -sh ~/.cache/uv/.tmp* 2>/dev/null | tail -1\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\necho \"tmp cleaned\"\n\necho \"=== uv缓存超限检查(>2GB) ===\"\nbash ~/.hermes/scripts/uv-cache-guard.sh\n\necho \"=== Hermes缓存 ===\"\ndu -sh ~/.hermes/audio_cache/ ~/.hermes/image_cache/ ~/.hermes/cron/output/ 2>/dev/null\nfind ~/.hermes/audio_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/image_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/cron/output/ -mtime +7 -delete 2>/dev/null\n\necho \"=== 过期备份清理(>15天) ===\"\nfind ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf {} + 2>/dev/null\nls -d ~/.hermes/backups/*/ 2>/dev/null\n\necho \"=== 最终磁盘 ===\"\ndf -h / | tail -1\n```\n输出清理结果即可。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "3 3 * * *",
+        "display": "3 3 * * *"
+      },
+      "schedule_display": "3 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 17
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:31:30.926982+08:00",
+      "next_run_at": "2026-05-14T03:03:00+08:00",
+      "last_run_at": "2026-05-13T03:04:24.419776+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "3cd73a214faf",
+      "name": "自审-Cron健康检查",
+      "prompt": "检查所有cron任务健康状况：\n1. 用 terminal 执行 `hermes cron list --json 2>/dev/null` 获取任务列表\n2. 对每个任务检查 last_status：\n   - 如果是 error，读取 ~/.hermes/cron/output/<job_id>/ 最近日志，判断错误类型\n   - 连续 error 的任务加粗告警\n3. 检查 next_run_at 是否合理（不在过去、不在1年后）\n4. 一次性任务且 next_run 已过期的，标记可删除\n\n输出简洁健康报告。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "33 3 * * *",
+        "display": "33 3 * * *"
+      },
+      "schedule_display": "33 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 17
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:32:08.250590+08:00",
+      "next_run_at": "2026-05-14T03:33:00+08:00",
+      "last_run_at": "2026-05-13T03:35:01.315082+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "ccbda93ef34b",
+      "name": "自审-Memory检查",
+      "prompt": "加载 daily-self-audit skill，按 Layer 2.1 的 Memory 审计规则执行：\n1. 读取 ~/.hermes/memories/MEMORY.md 和 USER.md\n2. 计算容量占比（MEMORY 2200上限，USER 1375上限）\n3. MEMORY > 80% 时触发自动压缩（按skill中的结构化规则：>300字压缩、相同子串>40字合并、过期>14天移除）\n4. MEMORY ≤ 80% 时只报建议\n5. USER.md 只报建议，不自动操作\n\n输出 Memory 审计报告，列出已自动压缩的条目和建议操作。",
+      "skills": [
+        "daily-self-audit"
+      ],
+      "skill": "daily-self-audit",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "3 4 * * *",
+        "display": "3 4 * * *"
+      },
+      "schedule_display": "3 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 17
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:33:20.553265+08:00",
+      "next_run_at": "2026-05-14T04:03:00+08:00",
+      "last_run_at": "2026-05-13T04:04:40.661985+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "5fc150ecaac2",
+      "name": "自审-Skills+Config检查",
+      "prompt": "加载 daily-self-audit skill，按 Layer 2.2/2.3 执行 Skills 和配置审计：\n\nSkills 审计（结构检查，不逐一 skill_view 深度审）：\n1. 用 terminal 执行 `hermes skills list` 获取列表\n2. 只检查 local skills 的 SKILL.md 是否存在且非空（用 read_file 或 cat）\n3. 标记 SKILL.md 缺失或为空的 skill\n\n配置审计：\n1. 检查 ~/.hermes/SOUL.md 是否存在且非空\n2. 检查 ~/.hermes/config.yaml 中是否有含 \"deprecated\" 的模型配置\n\n输出简洁检查报告。",
+      "skills": [
+        "daily-self-audit"
+      ],
+      "skill": "daily-self-audit",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "33 4 * * *",
+        "display": "33 4 * * *"
+      },
+      "schedule_display": "33 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 17
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:34:02.662305+08:00",
+      "next_run_at": "2026-05-14T04:33:00+08:00",
+      "last_run_at": "2026-05-13T04:35:29.046715+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "1ccb12cecce1",
+      "name": "weekly-cache-cleanup",
+      "prompt": "执行每周缓存清理：\n1. 运行 uv 缓存监控脚本: bash ~/.hermes/scripts/uv-cache-guard.sh\n2. pip cache purge\n3. npm cache clean --force\n4. 删除 uv .tmp 残留: find ~/.cache/uv -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\n5. 检查 Playwright 旧版本：当前使用的是 chromium-1217 和 chromium_headless_shell-1217，删除 ~/.cache/ms-playwright/ 下其他版本目录（保留 1217 和 ffmpeg）\n6. 报告清理前后的磁盘使用率 (df -h /)\n\n用 terminal 工具逐条执行。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * 0",
+        "display": "0 3 * * 0"
+      },
+      "schedule_display": "0 3 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T21:08:18.937072+08:00",
+      "next_run_at": "2026-05-17T03:00:00+08:00",
+      "last_run_at": "2026-05-03T03:04:51.279440+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null,
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    }
+  ],
+  "updated_at": "2026-05-13T04:35:29.047943+08:00"
+}

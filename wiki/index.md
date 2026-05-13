@@ -1,0 +1,185 @@
+# Wiki Index
+
+> Last updated: 2026-04-26 | Total pages: 175
+
+
+## Entities
+
+- [[hermes-agent]] — 开源AI Agent框架，由Nous Research开发，MIT协议。核心特性：自我改进循环、三层记忆、多平台网关、skill系统。
+- [[hermes-bundled-skills-catalog]] — 官方打包的内置skill库，安装时复制到 `~/.hermes/skills/`。共 **87 个skill**，覆盖 **28 个分类**。
+- [[hermes-optional-skills-catalog]] — 官方可选skill，仓库内 `optional-skills/` 目录，**默认不启用**。需手动安装：
+- [[hermes-v0.11.0]] — "The Interface Release" — 1,556 commits · 761 merged PRs · 1,314 files changed s
+
+## Concepts
+
+- [[2026-03-09-proxy-b-multiapp-skeleton]] — 源文档：[Proxy B Multi-App Skeleton Implementation Plan](https://raw.githubuserconte
+- [[2026-03-09-proxy-b-single-provider-ux]] — 源文档：[Proxy B Single-Provider UX Implementation Plan](https://raw.githubuserconte
+- [[2026-03-10-proxy-phase-c-manual-takeover]] — 源文档：[Proxy Phase C Manual Takeover Implementation Plan](https://raw.githubuserco
+- [[2026-03-11-app-specific-managed-proxy]] — 源文档：[App-Specific Managed Proxy Implementation Plan](https://raw.githubuserconte
+- [[2026-03-14-claude-provider-switch-ux]] — 源文档：[Claude Provider Switch UX Implementation Plan](https://raw.githubuserconten
+- [[2026-04-24-common-config-backend-consolidation]] — 源文档：[Common Config Backend Upstream Alignment Plan](https://raw.githubuserconten
+- [[amazon-bedrock]] — 源文档：[Amazon Bedrock integration - Anthropic](https://raw.githubusercontent.com/b
+- [[browser-cdp]] — 新增`browser_cdp`工具，提供原始DevTools Protocol透传能力。
+- [[changelog]] — 源文档：[Changelog](https://raw.githubusercontent.com/anthropics/claude-code/main/CH
+- [[checkpoints-and-rollback]] — 源文档：[Checkpoints and `/rollback`](https://raw.githubusercontent.com/NousResearch
+- [[cli-usage]] — 源文档：[CLI usage and controls - Anthropic](https://raw.githubusercontent.com/btcjo
+- [[cli]] — 源文档：[CLI Interface](https://raw.githubusercontent.com/NousResearch/hermes-agent/
+- [[common-tasks]] — 源文档：[Core tasks and workflows - Anthropic](https://raw.githubusercontent.com/btc
+- [[compression-anti-thrashing]] — v0.11.0对上下文压缩器的重大改进。
+- [[configuration]] — 源文档：[Configuration](https://raw.githubusercontent.com/NousResearch/hermes-agent/
+- [[corporate-proxy]] — 源文档：[Corporate proxy configuration - Anthropic](https://raw.githubusercontent.co
+- [[costs]] — 源文档：[Manage costs effectively - Anthropic](https://raw.githubusercontent.com/btc
+- [[cron-toolsets]] — Cron任务现在支持按job设置`enabled_toolsets`，限制每个job可用的工具集。
+- [[developer-guide-acp-internals]] — 源文档：[ACP Internals](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[developer-guide-adding-platform-adapters]] — 源文档：[Adding a Platform Adapter](https://github.com/NousResearch/hermes-agent/blo
+- [[developer-guide-adding-providers]] — 源文档：[Adding Providers](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[developer-guide-adding-tools]] — 源文档：[Adding Tools](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[developer-guide-agent-loop]] — 源文档：[Agent Loop Internals](https://github.com/NousResearch/hermes-agent/blob/mai
+- [[developer-guide-architecture]] — 源文档：[Architecture](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[developer-guide-browser-supervisor]] — 源文档：[Browser CDP Supervisor — Design](https://github.com/NousResearch/hermes-age
+- [[developer-guide-context-compression-and-caching]] — 源文档：[Context Compression and Caching](https://github.com/NousResearch/hermes-age
+- [[developer-guide-context-engine-plugin]] — 源文档：[Building a Context Engine Plugin](https://github.com/NousResearch/hermes-ag
+- [[developer-guide-contributing]] — 源文档：[Contributing](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[developer-guide-creating-skills]] — 源文档：[Creating Skills](https://github.com/NousResearch/hermes-agent/blob/main/web
+- [[developer-guide-cron-internals]] — 源文档：[Cron Internals](https://github.com/NousResearch/hermes-agent/blob/main/webs
+- [[developer-guide-environments]] — 源文档：[Environments, Benchmarks & Data Generation](https://github.com/NousResearch
+- [[developer-guide-extending-the-cli]] — 源文档：[Extending the CLI](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[developer-guide-gateway-internals]] — 源文档：[Gateway Internals](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[developer-guide-memory-provider-plugin]] — 源文档：[Building a Memory Provider Plugin](https://github.com/NousResearch/hermes-a
+- [[developer-guide-prompt-assembly]] — 源文档：[Prompt Assembly](https://github.com/NousResearch/hermes-agent/blob/main/web
+- [[developer-guide-provider-runtime]] — 源文档：[Provider Runtime Resolution](https://github.com/NousResearch/hermes-agent/b
+- [[developer-guide-session-storage]] — 源文档：[Session Storage](https://github.com/NousResearch/hermes-agent/blob/main/web
+- [[developer-guide-tools-runtime]] — 源文档：[Tools Runtime](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[developer-guide-trajectory-format]] — 源文档：[Trajectory Format](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[docker]] — 源文档：[Hermes Agent — Docker](https://raw.githubusercontent.com/NousResearch/herme
+- [[features-acp]] — 源文档：[ACP Editor Integration](https://github.com/NousResearch/hermes-agent/blob/m
+- [[features-api-server]] — 源文档：[API Server](https://github.com/NousResearch/hermes-agent/blob/main/website/
+- [[features-batch-processing]] — 源文档：[Batch Processing](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-browser]] — 源文档：[Browser Automation](https://github.com/NousResearch/hermes-agent/blob/main/
+- [[features-built-in-plugins]] — 源文档：[Built-in Plugins](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-code-execution]] — 源文档：[Code Execution (Programmatic Tool Calling)](https://github.com/NousResearch
+- [[features-context-files]] — 源文档：[Context Files](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[features-context-references]] — 源文档：[Context References](https://github.com/NousResearch/hermes-agent/blob/main/
+- [[features-credential-pools]] — 源文档：[Credential Pools](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-cron]] — 源文档：[Scheduled Tasks (Cron)](https://github.com/NousResearch/hermes-agent/blob/m
+- [[features-dashboard-plugins]] — 源文档：[Dashboard Plugins](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[features-delegation]] — 源文档：[Subagent Delegation](https://github.com/NousResearch/hermes-agent/blob/main
+- [[features-fallback-providers]] — 源文档：[Fallback Providers](https://github.com/NousResearch/hermes-agent/blob/main/
+- [[features-honcho]] — 源文档：[Honcho Memory](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[features-hooks]] — 源文档：[Event Hooks](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[features-image-generation]] — 源文档：[Image Generation](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-mcp]] — 源文档：[MCP (Model Context Protocol)](https://github.com/NousResearch/hermes-agent/
+- [[features-memory-providers]] — 源文档：[Memory Providers](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-memory]] — 源文档：[Persistent Memory](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[features-overview]] — 源文档：[Features Overview](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[features-personality]] — 源文档：[Personality & SOUL.md](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[features-plugins]] — 源文档：[Plugins](https://github.com/NousResearch/hermes-agent/blob/main/website/doc
+- [[features-provider-routing]] — 源文档：[Provider Routing](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-rl-training]] — 源文档：[RL Training](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[features-skills]] — 源文档：[Skills System](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[features-skins]] — 源文档：[Skins & Themes](https://github.com/NousResearch/hermes-agent/blob/main/webs
+- [[features-tool-gateway]] — 源文档：[Nous Tool Gateway](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[features-tools]] — 源文档：[Tools & Toolsets](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[features-tts]] — 源文档：[Voice & TTS](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[features-vision]] — 源文档：[Vision & Image Paste](https://github.com/NousResearch/hermes-agent/blob/mai
+- [[features-voice-mode]] — 源文档：[Voice Mode](https://github.com/NousResearch/hermes-agent/blob/main/website/
+- [[features-web-dashboard]] — 源文档：[Web Dashboard](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[feishu-improvements]] — 飞书适配器的3项重要更新。
+- [[getting-started-installation]] — 源文档：[Installation](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[getting-started-learning-path]] — 源文档：[Learning Path](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[getting-started-nix-setup]] — 源文档：[Nix & NixOS Setup](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[getting-started-quickstart]] — 源文档：[Quickstart](https://github.com/NousResearch/hermes-agent/blob/main/website/
+- [[getting-started-termux]] — 源文档：[Hermes on Android with Termux](https://github.com/NousResearch/hermes-agent
+- [[getting-started-updating]] — 源文档：[Updating & Uninstalling](https://github.com/NousResearch/hermes-agent/blob/
+- [[getting-started]] — 源文档：[Getting started with Claude Code - Anthropic](https://raw.githubusercontent
+- [[git-worktrees]] — 源文档：[Git Worktrees](https://raw.githubusercontent.com/NousResearch/hermes-agent/
+- [[github-actions]] — 源文档：[GitHub Actions - Anthropic](https://raw.githubusercontent.com/btcjon/claude
+- [[google-vertex-ai]] — 源文档：[Google Vertex AI integration - Anthropic](https://raw.githubusercontent.com
+- [[guides-automate-with-cron]] — 源文档：[Automate Anything with Cron](https://github.com/NousResearch/hermes-agent/b
+- [[guides-automation-templates]] — 源文档：[Automation Templates](https://github.com/NousResearch/hermes-agent/blob/mai
+- [[guides-aws-bedrock]] — 源文档：[AWS Bedrock](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[guides-build-a-hermes-plugin]] — 源文档：[Build a Hermes Plugin](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[guides-cron-troubleshooting]] — 源文档：[Cron Troubleshooting](https://github.com/NousResearch/hermes-agent/blob/mai
+- [[guides-daily-briefing-bot]] — 源文档：[Tutorial: Build a Daily Briefing Bot](https://github.com/NousResearch/herme
+- [[guides-delegation-patterns]] — 源文档：[Delegation & Parallel Work](https://github.com/NousResearch/hermes-agent/bl
+- [[guides-github-pr-review-agent]] — 源文档：[Tutorial: Build a GitHub PR Review Agent](https://github.com/NousResearch/h
+- [[guides-local-llm-on-mac]] — 源文档：[Run Local LLMs on Mac](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[guides-migrate-from-openclaw]] — 源文档：[Migrate from OpenClaw](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[guides-python-library]] — 源文档：[Using Hermes as a Python Library](https://github.com/NousResearch/hermes-ag
+- [[guides-team-telegram-assistant]] — 源文档：[Set Up a Team Telegram Assistant](https://github.com/NousResearch/hermes-ag
+- [[guides-tips]] — 源文档：[Tips & Best Practices](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[guides-use-mcp-with-hermes]] — 源文档：[Use MCP with Hermes](https://github.com/NousResearch/hermes-agent/blob/main
+- [[guides-use-soul-with-hermes]] — 源文档：[Use SOUL.md with Hermes](https://github.com/NousResearch/hermes-agent/blob/
+- [[guides-use-voice-mode-with-hermes]] — 源文档：[Use Voice Mode with Hermes](https://github.com/NousResearch/hermes-agent/bl
+- [[guides-webhook-github-pr-review]] — 源文档：[Automated GitHub PR Comments with Webhooks](https://github.com/NousResearch
+- [[guides-work-with-skills]] — 源文档：[Working with Skills](https://github.com/NousResearch/hermes-agent/blob/main
+- [[hermes-built-in-tools]] — 源文档：[Hermes Built-in Tools Reference](https://hermes-agent.nousresearch.com/docs
+- [[hermes-cli-commands]] — 源文档：[Hermes CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/r
+- [[hermes-config-setup]] — 交互式脚本配置Hermes Agent的9大功能模块。
+- [[hermes-environment-variables]] — 源文档：[Hermes Environment Variables](https://hermes-agent.nousresearch.com/docs/re
+- [[hermes-faq-troubleshooting]] — 源文档：[Hermes FAQ & Troubleshooting](https://hermes-agent.nousresearch.com/docs/re
+- [[hermes-mcp-config]] — 源文档：[Hermes MCP Config Reference](https://hermes-agent.nousresearch.com/docs/ref
+- [[hermes-profile-commands]] — 源文档：[Hermes Profile Commands Reference](https://hermes-agent.nousresearch.com/do
+- [[hermes-slash-commands]] — 源文档：[Hermes Slash Commands Reference](https://hermes-agent.nousresearch.com/docs
+- [[hermes-toolsets]] — 源文档：[Hermes Toolsets Reference](https://hermes-agent.nousresearch.com/docs/refer
+- [[ide-integrations]] — 源文档：[IDE integrations - Anthropic](https://raw.githubusercontent.com/btcjon/clau
+- [[integrations-index]] — 源文档：[Integrations](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[integrations-providers]] — 源文档：[AI Providers](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[llm-gateway]] — 源文档：[LLM gateway configuration - Anthropic](https://raw.githubusercontent.com/bt
+- [[memory]] — 源文档：[Manage Claude's memory - Anthropic](https://raw.githubusercontent.com/btcjo
+- [[messaging-bluebubbles]] — 源文档：[BlueBubbles (iMessage)](https://github.com/NousResearch/hermes-agent/blob/m
+- [[messaging-dingtalk]] — 源文档：[DingTalk Setup](https://github.com/NousResearch/hermes-agent/blob/main/webs
+- [[messaging-discord]] — 源文档：[Discord Setup](https://github.com/NousResearch/hermes-agent/blob/main/websi
+- [[messaging-email]] — 源文档：[Email Setup](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[messaging-feishu]] — 源文档：[Feishu / Lark Setup](https://github.com/NousResearch/hermes-agent/blob/main
+- [[messaging-homeassistant]] — 源文档：[Home Assistant Integration](https://github.com/NousResearch/hermes-agent/bl
+- [[messaging-index]] — 源文档：[Messaging Gateway](https://github.com/NousResearch/hermes-agent/blob/main/w
+- [[messaging-matrix]] — 源文档：[Matrix Setup](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[messaging-mattermost]] — 源文档：[Mattermost Setup](https://github.com/NousResearch/hermes-agent/blob/main/we
+- [[messaging-open-webui]] — 源文档：[Open WebUI Integration](https://github.com/NousResearch/hermes-agent/blob/m
+- [[messaging-qqbot]] — 源文档：[QQ Bot](https://github.com/NousResearch/hermes-agent/blob/main/website/docs
+- [[messaging-signal]] — 源文档：[Signal Setup](https://github.com/NousResearch/hermes-agent/blob/main/websit
+- [[messaging-slack]] — 源文档：[Slack Setup](https://github.com/NousResearch/hermes-agent/blob/main/website
+- [[messaging-sms]] — 源文档：[SMS Setup (Twilio)](https://github.com/NousResearch/hermes-agent/blob/main/
+- [[messaging-telegram]] — 源文档：[Telegram Setup](https://github.com/NousResearch/hermes-agent/blob/main/webs
+- [[messaging-webhooks]] — 源文档：[Webhooks](https://github.com/NousResearch/hermes-agent/blob/main/website/do
+- [[messaging-wecom-callback]] — 源文档：[WeCom Callback (Self-Built App)](https://github.com/NousResearch/hermes-age
+- [[messaging-wecom]] — 源文档：[WeCom (Enterprise WeChat)](https://github.com/NousResearch/hermes-agent/blo
+- [[messaging-weixin]] — 源文档：[Weixin (WeChat)](https://github.com/NousResearch/hermes-agent/blob/main/web
+- [[messaging-whatsapp]] — 源文档：[WhatsApp Setup](https://github.com/NousResearch/hermes-agent/blob/main/webs
+- [[monitoring-usage]] — 源文档：[Monitoring usage - Anthropic](https://raw.githubusercontent.com/btcjon/clau
+- [[orchestrator-role]] — v0.11.0新增，`delegate_task`的子agent现在有显式的`orchestrator`角色，可以再spawn自己的worker。
+- [[overview]] — 源文档：[Claude Code overview - Anthropic](https://raw.githubusercontent.com/btcjon/
+- [[plugin-surface]] — v0.11.0大幅扩展了Plugin能力面。
+- [[profiles]] — 源文档：[Profiles: Running Multiple Agents](https://raw.githubusercontent.com/NousRe
+- [[readme]] — 源文档：[Learning Style Plugin](https://raw.githubusercontent.com/anthropics/claude-
+- [[readmezh]] — 源文档：[CC-Switch CLI](https://raw.githubusercontent.com/SaladDay/cc-switch-cli/mai
+- [[reference-cli-commands]] — 源文档：[CLI Commands Reference](https://github.com/NousResearch/hermes-agent/blob/m
+- [[reference-environment-variables]] — 源文档：[Environment Variables Reference](https://github.com/NousResearch/hermes-age
+- [[reference-faq]] — 源文档：[FAQ & Troubleshooting](https://github.com/NousResearch/hermes-agent/blob/ma
+- [[reference-mcp-config-reference]] — 源文档：[MCP Config Reference](https://github.com/NousResearch/hermes-agent/blob/mai
+- [[reference-optional-skills-catalog]] — 源文档：[Optional Skills Catalog](https://github.com/NousResearch/hermes-agent/blob/
+- [[reference-profile-commands]] — 源文档：[Profile Commands Reference](https://github.com/NousResearch/hermes-agent/bl
+- [[reference-skills-catalog]] — 源文档：[Bundled Skills Catalog](https://github.com/NousResearch/hermes-agent/blob/m
+- [[reference-slash-commands]] — 源文档：[Slash Commands Reference](https://github.com/NousResearch/hermes-agent/blob
+- [[reference-tools-reference]] — 源文档：[Built-in Tools Reference](https://github.com/NousResearch/hermes-agent/blob
+- [[reference-toolsets-reference]] — 源文档：[Toolsets Reference](https://github.com/NousResearch/hermes-agent/blob/main/
+- [[release-note-v531-en]] — 源文档：[CC Switch CLI v5.3.1](https://raw.githubusercontent.com/SaladDay/cc-switch-
+- [[release-note-v531-zh]] — 源文档：[CC Switch CLI v5.3.1](https://raw.githubusercontent.com/SaladDay/cc-switch-
+- [[roadmap]] — 源文档：[Roadmap](https://raw.githubusercontent.com/SaladDay/cc-switch-cli/main/docs
+- [[sdk]] — 源文档：[SDK - Anthropic](https://raw.githubusercontent.com/btcjon/claude-code-docs/
+- [[security]] — 源文档：[Manage permissions and security - Anthropic](https://raw.githubusercontent.
+- [[session-resume]] — Gateway重启后自动恢复中断的agent工作。
+- [[sessions]] — 源文档：[Sessions](https://raw.githubusercontent.com/NousResearch/hermes-agent/main/
+- [[settings]] — 源文档：[Claude Code settings - Anthropic](https://raw.githubusercontent.com/btcjon/
+- [[shell-hooks]] — 将任意shell脚本绑定为Hermes生命周期钩子，无需写Python plugin。
+- [[team]] — 源文档：[Team setup - Anthropic](https://raw.githubusercontent.com/btcjon/claude-cod
+- [[third-party-integrations]] — 源文档：[Overview - Anthropic](https://raw.githubusercontent.com/btcjon/claude-code-
+- [[transport-abc]] — v0.11.0新增，将格式转换和HTTP传输从`run_agent.py`抽出为`agent/transports/`可插拔层。
+- [[troubleshooting]] — 源文档：[Troubleshooting - Anthropic](https://raw.githubusercontent.com/btcjon/claud
+- [[tui-ink]] — `hermes --tui` 全新React/Ink重写的交互式CLI，~310 commits。
+- [[tui]] — 源文档：[TUI](https://raw.githubusercontent.com/NousResearch/hermes-agent/main/websi
+- [[tutorials]] — 源文档：[Tutorials - Anthropic](https://raw.githubusercontent.com/btcjon/claude-code
+- [[v370-unified-mcp-refactor]] — 源文档：[v3.7.0 统一 MCP 管理重构计划](https://raw.githubusercontent.com/SaladDay/cc-switch-
+- [[vps-init-script]] — Ubuntu/Debian服务器一键初始化，交互菜单版，14项功能。
+- [[wecom-setup]] — 企业微信bot创建现在支持QR扫码配置向导。

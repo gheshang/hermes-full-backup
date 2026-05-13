@@ -1,0 +1,1 @@
+§ memory remove/replace用old_text子串匹配，短条目删除可能误伤含该子串的其他条目。Claude Code 模型不可用：所有模型别名（claude-sonnet-4-6、claude-3-5-sonnet-20241022、haiku）均报错 "model may not exist or you may not have access"。解决：不带 --model 参数使用默认模型，或检查 claude auth status。hermes send_message 命令不存在：hermes CLI 子命令列表中没有 send_message。脚本中需要发送飞书消息时，必须直接用飞书 Bot API（见 hermes-agent 技能的 references/feishu-bot-api-direct.md）。

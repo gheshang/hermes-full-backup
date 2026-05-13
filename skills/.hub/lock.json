@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "installed": {
+    "chinese-touch-ups": {
+      "source": "lobehub",
+      "identifier": "lobehub/chinese-touch-ups",
+      "trust_level": "community",
+      "scan_verdict": "safe",
+      "content_hash": "sha256:634f3206b8bcfa6c",
+      "install_path": "chinese-touch-ups",
+      "files": [
+        "SKILL.md"
+      ],
+      "metadata": {},
+      "installed_at": "2026-05-04T15:05:11.550333+00:00",
+      "updated_at": "2026-05-04T15:05:11.550360+00:00"
+    }
+  }
+}

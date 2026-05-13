@@ -1,0 +1,37 @@
+§ agency-agents-zh：仓库~/agency-agents-zh/，212中文角色（18部门），说中文名即调用。Karpathy编码元规则→skill(karpathy-coding-guidelines)，优先级高于角色库。
+
+§ SOUL.md优化：合并同逻辑段，砍重复表述，不减信息密度。6标题35行→3标题22行健康。元规则≤3条，方法论放skill。
+
+§ skill路由：编码→karpathy-coding-guidelines；debug→systematic-debugging；feature→test-driven-development；交付→superpowers-verification；review→superpowers-receiving-review；写skill→superpowers-writing-skills；多步骤→writing-plans+subagent-driven-development；自审→daily-self-audit。未列出→系统按description匹配。
+
+§ 模型配置：Hindsight→deepseek-chat(api.deepseek.com)；CC Switch→cc-switch config show。
+
+§ Hermes/CC技能目录：Hermes→~/.hermes/skills/，CC→~/.claude/skills/。共享：CC侧symlink→Hermes侧。CC skill≤40(>100超时)，只同步CC触发的。红线：用户没叫删的不删。
+
+§ skill symlink自指向→列表无限嵌套。排查：ls -la找自指向symlink删掉。knowledge-comic-novel已修复。
+
+§ memory remove/replace用old_text子串匹配，短条目删除可能误伤含该子串的其他条目。
+
+§ WPS .doc(非.docx)：pandoc/python-docx不可读。用olefile开OLE2容器，读WordDocument流，struct.unpack('<H')逐双字节解析UTF-16LE。
+
+§ 小说修改：fiction-subagent-workflow，Variant B——带括号内联标注的已有小说，逐处patch+子agent审核。
+
+§ 磁盘清理：`uv cache clean`只清`~/.cache/uv`（~175M），`~/.local/share/uv`（5.7G）是包安装目录，需手动清理。清理前先`du -sh ~/.local/share/uv/*`确认内容。
+
+§ 2026-05-05 飞书失联事件：.env被清空至3行（仅API_SERVER配置），飞书凭证丢失。从state-snapshots/20260503-012828-pre-update/.env恢复。gateway重启后WebSocket正常连接。已更新hermes-agent技能添加.env凭证丢失恢复流程。
+
+§ SenseNova U1 Fast 图像生成API：支持多尺寸生成，需配置model.image字段到config.yaml。
+
+§ Edge TTS 中文语音合成：免费无需API Key，推荐zh-CN-XiaoxiaoNeural语音，pip install edge-tts。
+
+§ 飞书文件发送：支持文件附件发送，不支持MEDIA类型语音气泡。
+§
+§ 文章/短片审核技能（article-short-story-review）：创建于2026-05-08，含5审核维度、5步流程、P0-P3优先级、10轮编辑审查法、优秀标准（文章5项+短片6项）、百分制评分（5维度×20分）、等级判定（A/B/C/D）、短片附加分（±10）、修改意见模板（含原文引用+修改后参考）。支持文件：references/audit-checklist.md, references/scoring-criteria.md, templates/review-report.md。
+§
+§ mlops分类目录：evaluation/inference/models/research/training/vector-databases 是分类容器目录，只有DESCRIPTION.md无SKILL.md属正常，非孤儿。仅`vector-databases/`为空壳（无子skill），可删除。
+§
+§ plan 技能文件路径：`.hermes/plans/`（非 `.herms/`），保存时注意拼写。文件操作后应验证路径正确性。
+§
+§ 文件路径拼写错误教训：`.hermes/` 写成 `.herms/` 导致文件写入后无法读取，引发60+次重复读取直到系统BLOCKED。任何文件操作后应验证路径正确性。已记录到 hermes-agent 技能的 references/path-typo-pitfall.md。
+§
+placeholder
