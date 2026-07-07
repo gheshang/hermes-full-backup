@@ -2,14 +2,14 @@
   "jobs": [
     {
       "id": "1c98c5dc724d",
-      "name": "自审-备份快照",
-      "prompt": "执行每日备份快照：\n```bash\nDATE=$(date +%Y-%m-%d)\nmkdir -p ~/.hermes/backups/$DATE\ncp ~/.hermes/memories/MEMORY.md ~/.hermes/backups/$DATE/MEMORY.md 2>/dev/null\ncp ~/.hermes/memories/USER.md ~/.hermes/backups/$DATE/USER.md 2>/dev/null\ncp -r ~/.hermes/skills/ ~/.hermes/backups/$DATE/skills/ 2>/dev/null\ncp ~/.hermes/config.yaml ~/.hermes/backups/$DATE/config.yaml 2>/dev/null\ncp ~/.hermes/SOUL.md ~/.hermes/backups/$DATE/SOUL.md 2>/dev/null\necho \"备份完成: ~/.hermes/backups/$DATE/\"\nls -la ~/.hermes/backups/$DATE/ 2>/dev/null\n```\n输出备份结果即可。",
+      "name": "\u81ea\u5ba1-\u5907\u4efd\u5feb\u7167",
+      "prompt": "[IMPORTANT: You are running as a scheduled cron job. DELIVERY: Your final response will be automatically delivered to the user \u2014 do NOT use send_message or try to deliver the output yourself. Just produce your report/output as your final response and the system handles the rest. SILENT: If there is genuinely nothing new to report, respond with exactly \"[SILENT]\" (nothing else) to suppress delivery. Never combine [SILENT] with content \u2014 either report your findings normally, or say [SILENT] and nothing more.]\n\n\u524d\u7f6e\u68c0\u67e5\uff1a\u67e5\u770b\u4e0a\u4e0b\u6587\u4e2d\u7684 [Script Output]\uff0c\u5982\u679c\u5305\u542b \"INACTIVE\"\uff0c\u5219\u8f93\u51fa [SILENT] \u5e76\u7ed3\u675f\u4efb\u52a1\uff08\u6628\u65e5\u65e0\u7528\u6237\u6d3b\u52a8\uff0c\u65e0\u9700\u5907\u4efd\uff09\u3002\n\n\u5982\u679c\u4e0a\u4e0b\u6587\u663e\u793a ACTIVE\uff08\u6628\u65e5\u6709\u7528\u6237\u6d3b\u52a8\uff09\uff0c\u6267\u884c\u6bcf\u65e5\u5907\u4efd\u5feb\u7167\uff1a\n```bash\nDATE=$(date +%Y-%m-%d)\nmkdir -p ~/.hermes/backups/$DATE\ncp ~/.hermes/memories/MEMORY.md ~/.hermes/backups/$DATE/MEMORY.md 2>/dev/null\ncp ~/.hermes/memories/USER.md ~/.hermes/backups/$DATE/USER.md 2>/dev/null\ncp -r ~/.hermes/skills/ ~/.hermes/backups/$DATE/skills/ 2>/dev/null\ncp ~/.hermes/config.yaml ~/.hermes/backups/$DATE/config.yaml 2>/dev/null\ncp ~/.hermes/SOUL.md ~/.hermes/backups/$DATE/SOUL.md 2>/dev/null\necho \"\u5907\u4efd\u5b8c\u6210: ~/.hermes/backups/$DATE/\"\nls -la ~/.hermes/backups/$DATE/ 2>/dev/null\n```\n\u8f93\u51fa\u5907\u4efd\u7ed3\u679c\u5373\u53ef\u3002",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": null,
+      "script": "check-yesterday-activity.py",
       "schedule": {
         "kind": "cron",
         "expr": "30 2 * * *",
@@ -18,39 +18,40 @@
       "schedule_display": "30 2 * * *",
       "repeat": {
         "times": null,
-        "completed": 18
+        "completed": 64
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T08:30:58.183864+08:00",
-      "next_run_at": "2026-05-14T02:30:00+08:00",
-      "last_run_at": "2026-05-13T02:30:54.448437+08:00",
+      "next_run_at": "2026-07-08T02:30:00+08:00",
+      "last_run_at": "2026-07-07T02:30:56.260810+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "feishu",
       "origin": {
         "platform": "feishu",
-        "chat_id": "",
-        "chat_name": "",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
         "thread_id": null
       },
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
     },
     {
       "id": "7468248ebd6c",
-      "name": "自审-缓存清理",
-      "prompt": "执行缓存和磁盘清理：\n```bash\necho \"=== 磁盘使用 ===\"\ndf -h / | tail -1\n\necho \"=== uv缓存 ===\"\ndu -sh ~/.cache/uv/ 2>/dev/null\n\necho \"=== uv .tmp残留清理 ===\"\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d 2>/dev/null | wc -l\ndu -sh ~/.cache/uv/.tmp* 2>/dev/null | tail -1\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\necho \"tmp cleaned\"\n\necho \"=== uv缓存超限检查(>2GB) ===\"\nbash ~/.hermes/scripts/uv-cache-guard.sh\n\necho \"=== Hermes缓存 ===\"\ndu -sh ~/.hermes/audio_cache/ ~/.hermes/image_cache/ ~/.hermes/cron/output/ 2>/dev/null\nfind ~/.hermes/audio_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/image_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/cron/output/ -mtime +7 -delete 2>/dev/null\n\necho \"=== 过期备份清理(>15天) ===\"\nfind ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf {} + 2>/dev/null\nls -d ~/.hermes/backups/*/ 2>/dev/null\n\necho \"=== 最终磁盘 ===\"\ndf -h / | tail -1\n```\n输出清理结果即可。",
+      "name": "\u81ea\u5ba1-\u7f13\u5b58\u6e05\u7406",
+      "prompt": "[IMPORTANT: You are running as a scheduled cron job. DELIVERY: Your final response will be automatically delivered to the user \u2014 do NOT use send_message or try to deliver the output yourself. Just produce your report/output as your final response and the system handles the rest. SILENT: If there is genuinely nothing new to report, respond with exactly \"[SILENT]\" (nothing else) to suppress delivery. Never combine [SILENT] with content \u2014 either report your findings normally, or say [SILENT] and nothing more.]\n\n\u524d\u7f6e\u68c0\u67e5\uff1a\u67e5\u770b\u4e0a\u4e0b\u6587\u4e2d\u7684 [Script Output]\uff0c\u5982\u679c\u5305\u542b \"INACTIVE\"\uff0c\u5219\u8f93\u51fa [SILENT] \u5e76\u7ed3\u675f\u4efb\u52a1\uff08\u6628\u65e5\u65e0\u7528\u6237\u6d3b\u52a8\uff0c\u65e0\u9700\u6e05\u7406\uff09\u3002\n\n\u5982\u679c\u4e0a\u4e0b\u6587\u663e\u793a ACTIVE\uff08\u6628\u65e5\u6709\u7528\u6237\u6d3b\u52a8\uff09\uff0c\u6267\u884c\u7f13\u5b58\u548c\u78c1\u76d8\u6e05\u7406\uff1a\n```bash\necho \"=== \u78c1\u76d8\u4f7f\u7528 ===\"\ndf -h / | tail -1\n\necho \"=== uv\u7f13\u5b58 ===\"\ndu -sh ~/.cache/uv/ 2>/dev/null\n\necho \"=== uv .tmp\u6b8b\u7559\u6e05\u7406 ===\"\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d 2>/dev/null | wc -l\ndu -sh ~/.cache/uv/.tmp* 2>/dev/null | tail -1\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\necho \"tmp cleaned\"\n\necho \"=== uv\u7f13\u5b58\u8d85\u9650\u68c0\u67e5(>2GB) ===\"\nbash ~/.hermes/scripts/uv-cache-guard.sh\n\necho \"=== Hermes\u7f13\u5b58 ===\"\ndu -sh ~/.hermes/audio_cache/ ~/.hermes/image_cache/ ~/.hermes/cron/output/ 2>/dev/null\nfind ~/.hermes/audio_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/image_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/cron/output/ -mtime +7 -delete 2>/dev/null\n\necho \"=== \u8fc7\u671f\u5907\u4efd\u6e05\u7406(>15\u5929) ===\"\nfind ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf {} + 2>/dev/null\nls -d ~/.hermes/backups/*/ 2>/dev/null\n\necho \"=== \u6700\u7ec8\u78c1\u76d8 ===\"\ndf -h / | tail -1\n```\n\u8f93\u51fa\u6e05\u7406\u7ed3\u679c\u5373\u53ef\u3002",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": null,
+      "script": "check-yesterday-activity.py",
       "schedule": {
         "kind": "cron",
         "expr": "3 3 * * *",
@@ -59,39 +60,40 @@
       "schedule_display": "3 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 17
+        "completed": 63
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T08:31:30.926982+08:00",
-      "next_run_at": "2026-05-14T03:03:00+08:00",
-      "last_run_at": "2026-05-13T03:04:24.419776+08:00",
+      "next_run_at": "2026-07-08T03:03:00+08:00",
+      "last_run_at": "2026-07-07T03:03:56.122474+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "feishu",
       "origin": {
         "platform": "feishu",
-        "chat_id": "",
-        "chat_name": "",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
         "thread_id": null
       },
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
     },
     {
       "id": "3cd73a214faf",
-      "name": "自审-Cron健康检查",
-      "prompt": "检查所有cron任务健康状况：\n1. 用 terminal 执行 `hermes cron list --json 2>/dev/null` 获取任务列表\n2. 对每个任务检查 last_status：\n   - 如果是 error，读取 ~/.hermes/cron/output/<job_id>/ 最近日志，判断错误类型\n   - 连续 error 的任务加粗告警\n3. 检查 next_run_at 是否合理（不在过去、不在1年后）\n4. 一次性任务且 next_run 已过期的，标记可删除\n\n输出简洁健康报告。",
+      "name": "\u81ea\u5ba1-Cron\u5065\u5eb7\u68c0\u67e5",
+      "prompt": "[IMPORTANT: You are running as a scheduled cron job. DELIVERY: Your final response will be automatically delivered to the user \u2014 do NOT use send_message or try to deliver the output yourself. Just produce your report/output as your final response and the system handles the rest. SILENT: If there is genuinely nothing new to report, respond with exactly \"[SILENT]\" (nothing else) to suppress delivery. Never combine [SILENT] with content \u2014 either report your findings normally, or say [SILENT] and nothing more.]\n\n\u524d\u7f6e\u68c0\u67e5\uff1a\u67e5\u770b\u4e0a\u4e0b\u6587\u4e2d\u7684 [Script Output]\uff0c\u5982\u679c\u5305\u542b \"INACTIVE\"\uff0c\u5219\u8f93\u51fa [SILENT] \u5e76\u7ed3\u675f\u4efb\u52a1\uff08\u6628\u65e5\u65e0\u7528\u6237\u6d3b\u52a8\uff0c\u65e0\u9700\u68c0\u67e5 cron \u5065\u5eb7\u72b6\u6001\uff09\u3002\n\n\u5982\u679c\u4e0a\u4e0b\u6587\u663e\u793a ACTIVE\uff08\u6628\u65e5\u6709\u7528\u6237\u6d3b\u52a8\uff09\uff0c\u68c0\u67e5\u6240\u6709cron\u4efb\u52a1\u5065\u5eb7\u72b6\u51b5\uff1a\n1. \u7528 terminal \u6267\u884c `hermes cron list --json 2>/dev/null` \u83b7\u53d6\u4efb\u52a1\u5217\u8868\n2. \u5bf9\u6bcf\u4e2a\u4efb\u52a1\u68c0\u67e5 last_status\uff1a\n   - \u5982\u679c\u662f error\uff0c\u8bfb\u53d6 ~/.hermes/cron/output/<job_id>/ \u6700\u8fd1\u65e5\u5fd7\uff0c\u5224\u65ad\u9519\u8bef\u7c7b\u578b\n   - \u8fde\u7eed error \u7684\u4efb\u52a1\u52a0\u7c97\u544a\u8b66\n3. \u68c0\u67e5 next_run_at \u662f\u5426\u5408\u7406\uff08\u4e0d\u5728\u8fc7\u53bb\u3001\u4e0d\u57281\u5e74\u540e\uff09\n4. \u4e00\u6b21\u6027\u4efb\u52a1\u4e14 next_run \u5df2\u8fc7\u671f\u7684\uff0c\u6807\u8bb0\u53ef\u5220\u9664\n\n\u8f93\u51fa\u7b80\u6d01\u5065\u5eb7\u62a5\u544a\u3002",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": null,
+      "script": "check-yesterday-activity.py",
       "schedule": {
         "kind": "cron",
         "expr": "33 3 * * *",
@@ -100,33 +102,34 @@
       "schedule_display": "33 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 17
+        "completed": 62
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T08:32:08.250590+08:00",
-      "next_run_at": "2026-05-14T03:33:00+08:00",
-      "last_run_at": "2026-05-13T03:35:01.315082+08:00",
+      "next_run_at": "2026-07-08T03:33:00+08:00",
+      "last_run_at": "2026-07-07T03:33:56.513456+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "feishu",
       "origin": {
         "platform": "feishu",
-        "chat_id": "",
-        "chat_name": "",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
         "thread_id": null
       },
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
     },
     {
       "id": "ccbda93ef34b",
-      "name": "自审-Memory检查",
-      "prompt": "加载 daily-self-audit skill，按 Layer 2.1 的 Memory 审计规则执行：\n1. 读取 ~/.hermes/memories/MEMORY.md 和 USER.md\n2. 计算容量占比（MEMORY 2200上限，USER 1375上限）\n3. MEMORY > 80% 时触发自动压缩（按skill中的结构化规则：>300字压缩、相同子串>40字合并、过期>14天移除）\n4. MEMORY ≤ 80% 时只报建议\n5. USER.md 只报建议，不自动操作\n\n输出 Memory 审计报告，列出已自动压缩的条目和建议操作。",
+      "name": "\u81ea\u5ba1-Memory\u68c0\u67e5",
+      "prompt": "[IMPORTANT: You are running as a scheduled cron job. DELIVERY: Your final response will be automatically delivered to the user \u2014 do NOT use send_message or try to deliver the output yourself. Just produce your report/output as your final response and the system handles the rest. SILENT: If there is genuinely nothing new to report, respond with exactly \"[SILENT]\" (nothing else) to suppress delivery. Never combine [SILENT] with content \u2014 either report your findings normally, or say [SILENT] and nothing more.]\n\n\u524d\u7f6e\u68c0\u67e5\uff1a\u67e5\u770b\u4e0a\u4e0b\u6587\u4e2d\u7684 [Script Output]\uff0c\u5982\u679c\u5305\u542b \"INACTIVE\"\uff0c\u5219\u8f93\u51fa [SILENT] \u5e76\u7ed3\u675f\u4efb\u52a1\uff08\u6628\u65e5\u65e0\u7528\u6237\u6d3b\u52a8\uff0c\u65e0\u9700\u5ba1\u8ba1 Memory\uff09\u3002\n\n\u5982\u679c\u4e0a\u4e0b\u6587\u663e\u793a ACTIVE\uff08\u6628\u65e5\u6709\u7528\u6237\u6d3b\u52a8\uff09\uff0c\u52a0\u8f7d daily-self-audit skill\uff0c\u6309 Layer 2.1 \u7684 Memory \u5ba1\u8ba1\u89c4\u5219\u6267\u884c\uff1a\n1. \u8bfb\u53d6 ~/.hermes/memories/MEMORY.md \u548c USER.md\n2. \u8ba1\u7b97\u5bb9\u91cf\u5360\u6bd4\uff08MEMORY 2200\u4e0a\u9650\uff0cUSER 1375\u4e0a\u9650\uff09\n3. MEMORY > 80% \u65f6\u89e6\u53d1\u81ea\u52a8\u538b\u7f29\uff08\u6309skill\u4e2d\u7684\u7ed3\u6784\u5316\u89c4\u5219\uff1a>300\u5b57\u538b\u7f29\u3001\u76f8\u540c\u5b50\u4e32>40\u5b57\u5408\u5e76\u3001\u8fc7\u671f>14\u5929\u79fb\u9664\uff09\n4. MEMORY \u2264 80% \u65f6\u53ea\u62a5\u5efa\u8bae\n5. USER.md \u53ea\u62a5\u5efa\u8bae\uff0c\u4e0d\u81ea\u52a8\u64cd\u4f5c\n\n\u8f93\u51fa Memory \u5ba1\u8ba1\u62a5\u544a\uff0c\u5217\u51fa\u5df2\u81ea\u52a8\u538b\u7f29\u7684\u6761\u76ee\u548c\u5efa\u8bae\u64cd\u4f5c\u3002",
       "skills": [
         "daily-self-audit"
       ],
@@ -134,7 +137,7 @@
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": null,
+      "script": "check-yesterday-activity.py",
       "schedule": {
         "kind": "cron",
         "expr": "3 4 * * *",
@@ -143,33 +146,34 @@
       "schedule_display": "3 4 * * *",
       "repeat": {
         "times": null,
-        "completed": 17
+        "completed": 62
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T08:33:20.553265+08:00",
-      "next_run_at": "2026-05-14T04:03:00+08:00",
-      "last_run_at": "2026-05-13T04:04:40.661985+08:00",
+      "next_run_at": "2026-07-08T04:03:00+08:00",
+      "last_run_at": "2026-07-07T04:03:57.297750+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "feishu",
       "origin": {
         "platform": "feishu",
-        "chat_id": "",
-        "chat_name": "",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
         "thread_id": null
       },
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
     },
     {
       "id": "5fc150ecaac2",
-      "name": "自审-Skills+Config检查",
-      "prompt": "加载 daily-self-audit skill，按 Layer 2.2/2.3 执行 Skills 和配置审计：\n\nSkills 审计（结构检查，不逐一 skill_view 深度审）：\n1. 用 terminal 执行 `hermes skills list` 获取列表\n2. 只检查 local skills 的 SKILL.md 是否存在且非空（用 read_file 或 cat）\n3. 标记 SKILL.md 缺失或为空的 skill\n\n配置审计：\n1. 检查 ~/.hermes/SOUL.md 是否存在且非空\n2. 检查 ~/.hermes/config.yaml 中是否有含 \"deprecated\" 的模型配置\n\n输出简洁检查报告。",
+      "name": "\u81ea\u5ba1-Skills+Config\u68c0\u67e5",
+      "prompt": "[IMPORTANT: You are running as a scheduled cron job. DELIVERY: Your final response will be automatically delivered to the user \u2014 do NOT use send_message or try to deliver the output yourself. Just produce your report/output as your final response and the system handles the rest. SILENT: If there is genuinely nothing new to report, respond with exactly \"[SILENT]\" (nothing else) to suppress delivery. Never combine [SILENT] with content \u2014 either report your findings normally, or say [SILENT] and nothing more.]\n\n\u524d\u7f6e\u68c0\u67e5\uff1a\u67e5\u770b\u4e0a\u4e0b\u6587\u4e2d\u7684 [Script Output]\uff0c\u5982\u679c\u5305\u542b \"INACTIVE\"\uff0c\u5219\u8f93\u51fa [SILENT] \u5e76\u7ed3\u675f\u4efb\u52a1\uff08\u6628\u65e5\u65e0\u7528\u6237\u6d3b\u52a8\uff0c\u65e0\u9700\u5ba1\u8ba1 Skills \u548c\u914d\u7f6e\uff09\u3002\n\n\u5982\u679c\u4e0a\u4e0b\u6587\u663e\u793a ACTIVE\uff08\u6628\u65e5\u6709\u7528\u6237\u6d3b\u52a8\uff09\uff0c\u52a0\u8f7d daily-self-audit skill\uff0c\u6309 Layer 2.2/2.3 \u6267\u884c Skills \u548c\u914d\u7f6e\u5ba1\u8ba1\uff1a\n\nSkills \u5ba1\u8ba1\uff08\u7ed3\u6784\u68c0\u67e5\uff0c\u4e0d\u9010\u4e00 skill_view \u6df1\u5ea6\u5ba1\uff09\uff1a\n1. \u7528 terminal \u6267\u884c `ls ~/.hermes/skills/` \u68c0\u67e5 skill \u76ee\u5f55\n2. \u7528 terminal \u6267\u884c `hermes skills list --json 2>/dev/null` \u83b7\u53d6\u5217\u8868\n3. \u68c0\u67e5\u6bcf\u4e2a skill \u7684 SKILL.md \u662f\u5426\u5b58\u5728\u4e14\u975e\u7a7a\n4. \u5217\u51fa\u6587\u4ef6\u540d\u548c\u76ee\u5f55\u5f02\u5e38\u7684 skill\n\n\u914d\u7f6e\u5ba1\u8ba1\uff1a\n1. \u68c0\u67e5 config.yaml \u5b8c\u6574\u6027\uff08\u5173\u952e\u6bb5\uff1aplatforms, custom_providers, model, memory\uff09\n2. \u68c0\u67e5 SOUL.md \u662f\u5426\u5b58\u5728\u4e14\u975e\u7a7a\n3. \u4e0e config.yaml.bak \u5bf9\u6bd4\u5927\u5c0f\u662f\u5426\u5f02\u5e38\uff08\u91cf\u7ea7\u504f\u5dee\u8d85 20% \u5219\u544a\u8b66\uff09\n\n\u8f93\u51fa Skills + Config \u5ba1\u8ba1\u62a5\u544a\u3002",
       "skills": [
         "daily-self-audit"
       ],
@@ -177,7 +181,7 @@
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": null,
+      "script": "check-yesterday-activity.py",
       "schedule": {
         "kind": "cron",
         "expr": "33 4 * * *",
@@ -186,33 +190,34 @@
       "schedule_display": "33 4 * * *",
       "repeat": {
         "times": null,
-        "completed": 17
+        "completed": 62
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T08:34:02.662305+08:00",
-      "next_run_at": "2026-05-14T04:33:00+08:00",
-      "last_run_at": "2026-05-13T04:35:29.046715+08:00",
+      "next_run_at": "2026-07-08T04:33:00+08:00",
+      "last_run_at": "2026-07-07T04:33:57.903007+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "feishu",
       "origin": {
         "platform": "feishu",
-        "chat_id": "",
-        "chat_name": "",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
         "thread_id": null
       },
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
     },
     {
       "id": "1ccb12cecce1",
       "name": "weekly-cache-cleanup",
-      "prompt": "执行每周缓存清理：\n1. 运行 uv 缓存监控脚本: bash ~/.hermes/scripts/uv-cache-guard.sh\n2. pip cache purge\n3. npm cache clean --force\n4. 删除 uv .tmp 残留: find ~/.cache/uv -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\n5. 检查 Playwright 旧版本：当前使用的是 chromium-1217 和 chromium_headless_shell-1217，删除 ~/.cache/ms-playwright/ 下其他版本目录（保留 1217 和 ffmpeg）\n6. 报告清理前后的磁盘使用率 (df -h /)\n\n用 terminal 工具逐条执行。",
+      "prompt": "\u6267\u884c\u6bcf\u5468\u7f13\u5b58\u6e05\u7406\uff1a\n1. \u8fd0\u884c uv \u7f13\u5b58\u76d1\u63a7\u811a\u672c: bash ~/.hermes/scripts/uv-cache-guard.sh\n2. pip cache purge\n3. npm cache clean --force\n4. \u5220\u9664 uv .tmp \u6b8b\u7559: find ~/.cache/uv -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\n5. \u68c0\u67e5 Playwright \u65e7\u7248\u672c\uff1a\u5f53\u524d\u4f7f\u7528\u7684\u662f chromium-1217 \u548c chromium_headless_shell-1217\uff0c\u5220\u9664 ~/.cache/ms-playwright/ \u4e0b\u5176\u4ed6\u7248\u672c\u76ee\u5f55\uff08\u4fdd\u7559 1217 \u548c ffmpeg\uff09\n6. \u62a5\u544a\u6e05\u7406\u524d\u540e\u7684\u78c1\u76d8\u4f7f\u7528\u7387 (df -h /)\n\n\u7528 terminal \u5de5\u5177\u9010\u6761\u6267\u884c\u3002",
       "skills": [],
       "skill": null,
       "model": null,
@@ -227,24 +232,73 @@
       "schedule_display": "0 3 * * 0",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-26T21:08:18.937072+08:00",
-      "next_run_at": "2026-05-17T03:00:00+08:00",
-      "last_run_at": "2026-05-03T03:04:51.279440+08:00",
+      "next_run_at": "2026-07-12T03:00:00+08:00",
+      "last_run_at": "2026-07-05T03:00:53.368193+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
-      "deliver": "local",
+      "deliver": "feishu",
       "origin": null,
       "enabled_toolsets": [
         "terminal"
-      ]
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "aa88ae29674f",
+      "name": "\u6bcf\u65e5\u5168\u7403\u65b0\u95fb\u65e9\u62a5",
+      "prompt": "\u4eca\u5929\u662f $(date +%Y\u5e74%m\u6708%d\u65e5)\u3002\u6267\u884c\u4ee5\u4e0b\u4efb\u52a1\uff0c\u5168\u90e8\u7528\u4e2d\u6587\u8f93\u51fa\uff1a\n\n## \u4efb\u52a1\u4e00\uff1a\u91c7\u96c6\u5168\u7403\u70ed\u95e8\u65b0\u95fb\n\n1. \u8bbf\u95ee AP News (https://apnews.com) \u83b7\u53d6\u5f53\u5929\u5934\u6761\u65b0\u95fb\uff0c\u63d0\u53d6\u524d 5 \u6761\u6700\u70ed\u95e8\u7684\n2. \u8bbf\u95ee BBC World (https://www.bbc.com/news/world) \u83b7\u53d6\u5f53\u5929\u5934\u6761\uff0c\u63d0\u53d6\u524d 5 \u6761\n3. \u8bbf\u95ee The Guardian (https://www.theguardian.com/international) \u83b7\u53d6\u5f53\u5929\u5934\u6761\uff0c\u63d0\u53d6\u524d 5 \u6761\n4. \u8bbf\u95ee Reuters (https://www.reuters.com) \u83b7\u53d6\u5f53\u5929\u5934\u6761\uff0c\u63d0\u53d6\u524d 3 \u6761\n\n## \u4efb\u52a1\u4e8c\uff1a\u91c7\u96c6 AI \u70ed\u95e8\u65b0\u95fb\n\n1. \u8bbf\u95ee Reuters AI (https://www.reuters.com/technology/artificial-intelligence) \u83b7\u53d6 AI \u65b0\u95fb\n2. \u8bbf\u95ee The Guardian AI (https://www.theguardian.com/technology/artificialintelligenceai) \u83b7\u53d6 AI \u65b0\u95fb\n3. \u641c\u7d22 \"top AI news today\" \u83b7\u53d6\u6700\u65b0 AI \u52a8\u6001\n\u4ece\u4ee5\u4e0a\u6765\u6e90\u4e2d\u9009\u51fa\u5168\u7403\u6700\u706b\u7684 **3 \u6761 AI \u65b0\u95fb**\n\n## \u4efb\u52a1\u4e09\uff1a\u7f16\u8bd1\u8f93\u51fa\n\n\u8f93\u51fa\u683c\u5f0f\u5982\u4e0b\uff08\u4e25\u683c\u6309\u6b64\u683c\u5f0f\uff09\uff1a\n\n---\n\n\ud83c\udf0f **\u5168\u7403\u65b0\u95fb\u65e9\u62a5 | $(date +%Y\u5e74%m\u6708%d\u65e5)**\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n### \ud83d\udce1 AP News \u70ed\u95e8\n\n1. [\u6807\u9898\u4e2d\u6587\u7ffb\u8bd1]\n   \u6765\u6e90\uff1aAP News\n   \ud83d\udd17 \u539f\u6587\u94fe\u63a5\n\n2. [\u6807\u9898\u4e2d\u6587\u7ffb\u8bd1]\n   ...\n\n### \ud83d\udce1 BBC \u70ed\u95e8\n\n1. ...\n...\n\n### \ud83d\udce1 The Guardian \u70ed\u95e8\n\n1. ...\n...\n\n### \ud83e\udd16 AI \u7126\u70b9\n\n1. **\u6807\u9898\u4e2d\u6587\u7ffb\u8bd1**\n   \u6458\u8981\uff1a50-80\u5b57\u4e2d\u6587\u6458\u8981\n   \ud83d\udd17 \u539f\u6587\u94fe\u63a5\n\n2. ...\n3. ...\n\n---\n\n\ud83d\udccc *\u6570\u636e\u6765\u6e90\uff1aAP News\u3001BBC\u3001The Guardian\u3001Reuters*\n\u23f0 \u91c7\u96c6\u65f6\u95f4\uff1a$(date +%Y-%m-%d\\ %H:%M) \u5317\u4eac\u65f6\u95f4\n\n\u8981\u6c42\uff1a\n- \u6240\u6709\u5185\u5bb9\u7ffb\u8bd1\u6210\u4e2d\u6587\uff0c\u6807\u9898\u7528\u52a0\u7c97\n- \u6bcf\u6761\u65b0\u95fb\u9644\u539f\u6587\u94fe\u63a5\n- AI \u65b0\u95fb\u8981\u6709\u7b80\u77ed\u6458\u8981\uff0850-80\u5b57\uff09\n- \u5982\u679c\u67d0\u7f51\u7ad9\u65e0\u6cd5\u8bbf\u95ee\uff0c\u8df3\u8fc7\u8be5\u6765\u6e90\uff0c\u4e0d\u8981\u62a5\u9519\n- \u603b\u957f\u5ea6\u63a7\u5236\u5728 3000 \u5b57\u4ee5\u5185\n- \u98ce\u683c\u7b80\u6d01\u4fe1\u606f\u5bc6\u96c6\uff0c\u9002\u5408\u6668\u95f4\u9605\u8bfb",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "custom",
+      "model_snapshot": "deepseek-v4-flash",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 7 * * *",
+        "display": "30 7 * * *"
+      },
+      "schedule_display": "30 7 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-07-07T08:51:32.477501+08:00",
+      "next_run_at": "2026-07-08T07:30:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null,
+        "user_id": "ou_6b1b3dca85d3327b80473ae7f97520ca"
+      },
+      "enabled_toolsets": [
+        "web",
+        "terminal"
+      ],
+      "workdir": null
     }
   ],
-  "updated_at": "2026-05-13T04:35:29.047943+08:00"
+  "updated_at": "2026-07-07T08:51:32.567934+08:00"
 }

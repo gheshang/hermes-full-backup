@@ -34,7 +34,7 @@ Use this skill when the user:
 
 ## Wiki Location
 
-**Location:** Set via `WIKI_PATH` environment variable (e.g. in `~/.hermes/.env`).
+**Location**: Set via `WIKI_PATH` environment variable (e.g. in `~/.hermes/.env`).
 
 If unset, defaults to `~/wiki`.
 
@@ -42,8 +42,19 @@ If unset, defaults to `~/wiki`.
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
 
-The wiki is just a directory of markdown files — open it in Obsidian, VS Code, or
-any editor. No database, no special tooling required.
+The wiki is just a directory of markdown files — open it in Obsidian, VS Code, or any editor. No database, no special tooling required.
+
+### Domain-Specific Wikis
+
+For wikis focused on a single tool/domain (e.g., OpenCode, Kubernetes, React), create a subdirectory:
+
+```bash
+~/wiki/opencode/     # OpenCode CLI knowledge base
+~/wiki/kubernetes/   # Kubernetes docs and patterns
+~/wiki/react/        # React ecosystem knowledge
+```
+
+Each subdirectory has its own `SCHEMA.md`, `index.md`, `log.md`, and content directories. This keeps wikis isolated and allows multiple domain wikis simultaneously.
 
 ## Architecture: Three Layers
 
@@ -543,6 +554,19 @@ vault in Obsidian on your laptop/phone — changes appear within seconds.
   The agent should check log size during lint.
 - **Handle contradictions explicitly** — don't silently overwrite. Note both claims with dates,
  mark in frontmatter, flag for user review.
+- **Choose the right pattern** — separate subdirectory (`~/wiki/<tool>/`) vs. integrated into main
+  wiki (`~/.hermes/wiki/entities/`). See `references/building-integrated-wiki.md` for the decision
+  matrix. Don't create both for the same domain.
+- **web_extract truncates large pages** — pages >5000 chars get LLM-summarized and lose structure.
+  For reference docs, prefer GitHub raw source or browser extraction. If truncation happens,
+  split the crawl: extract what you can, then use web_search to find missing sections,
+  then synthesize from multiple partial sources.
+- **Multi-round crawling is normal** — when user says "continue" or "not enough", don't just
+  add more of the same. Expand to new sections/categories of the docs. First round = overview,
+  second round = deep dive into specific areas the user cares about.
+- **Round 3 is user-directed** — don't assume advanced topics (plugins, enterprise, SDK) are needed
+  unless the user explicitly requests them. Round 2 should cover the core docs exhaustively;
+  Round 3 is triggered by specific user signals like "插件系统还有企业部署的方面".
 
 ## Batch Ingest of Official Documentation Sites
 
@@ -551,7 +575,7 @@ When ingesting large structured docs (Hermes docs, framework references, API cat
 **Extraction strategy priority (fastest to slowest):**
 
 1. **GitHub raw source** — if the docs site is built from a public repo, pull `.md` directly:
- ```bash
+```bash
  # Find source: search "github <org> <repo> docs/reference/<page>.md"
  curl -sL 'https://raw.githubusercontent.com/<org>/<repo>/main/website/docs/reference/<page>.md' -o raw/articles/<name>.md
  ```
@@ -595,11 +619,44 @@ This lists all files so you can find the correct raw URL.
 4. Update index.md + log.md once at the end
 5. `wiki-sync.sh` to git push
 
-## Related Tools
+### Round-Based Crawling (for large docs sites)
 
+When ingesting large documentation sites (opencode.ai/docs, etc.) where a single pass is insufficient:
+
+**Round 1 — Overview:**
+- Extract homepage, CLI reference, key concept pages
+- Create entity pages for core topics (overview, commands, configuration, core features)
+- Create concept pages for quick reference
+- User reviews and signals continuation ("继续爬取", "not enough", etc.)
+
+**Round 2 — Deep Dive:**
+- Based on Round 1 gaps, target specific doc sections
+- Extract TUI, providers, LSP, permissions, tools, integrations, etc.
+- Create remaining entity and concept pages
+- Update index.md + log.md
+
+**Round 3+ — Edge Cases & User-Directed Expansion:**
+- Custom tools, advanced configs, troubleshooting, comparisons
+- Enterprise deployment, SDK, plugins, ecosystem
+- Only proceed if user explicitly requests or Round 2 reveals critical gaps
+- **Key principle:** Round 3 is often user-directed — wait for explicit signals like "插件系统还有企业部署的方面" rather than assuming advanced topics are needed
+
+**Key principle:** Don't try to crawl everything in one pass. Let the user's feedback guide depth. Round 1 establishes the skeleton; Round 2+ flesh it out based on what matters.
+
+## Related Tools
+## Related Tools
 [llm-wiki-compiler](https://github.com/atomicmemory/llm-wiki-compiler) is a Node.js CLI that
 compiles sources into a concept wiki with the same Karpathy inspiration. It's Obsidian-compatible,
 so users who want a scheduled/CLI-driven compile pipeline can point it at the same vault this
 skill maintains. Trade-offs: it owns page generation (replaces the agent's judgment on page
 creation) and is tuned for small corpora. Use this skill when you want agent-in-the-loop curation;
 use llmwiki when you want batch compile of a source directory.
+
+## Reference Files
+
+| File | Purpose |
+|------|---------|
+| `references/building-domain-wikis.md` | Pattern for creating wikis focused on a specific CLI tool or framework |
+| `references/building-opencode-wiki.md` | Proven OpenCode CLI wiki pattern (separate subdirectory approach) |
+| `references/building-opencode-wiki-v2.md` | Proven OpenCode CLI wiki pattern (integrated approach, 3-round crawling, 76 files) |
+| `references/building-integrated-wiki.md` | Pattern for integrating a domain wiki into the main wiki (cross-domain linking, decision matrix) |

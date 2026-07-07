@@ -12,9 +12,14 @@ tags: [backup, sanitize, deploy, migration, github]
 - Migrating Hermes to a new server
 - Sharing Hermes setup with someone else (removing your credentials)
 - Periodic backup before major config changes
+- **Raw backup (no sanitization)**: User explicitly requests — all secrets preserved, push to private repo only
 
 ## Overview
-3-phase workflow: BACKUP → SANITIZE → DEPLOY SCRIPTS
+Two modes:
+- **Sanitized (default)**: BACKUP → SANITIZE → VERIFY → PUSH
+- **Raw (unsanitized)**: BACKUP → VERIFY(secrets present) → PUSH (all secrets preserved, skip Phase 2 entirely)
+
+⚠️ **Raw mode must be explicitly requested and confirmed**. Never default to pushing unsanitized secrets to GitHub.
 
 ## Phase 1: Backup to GitHub (Private Repo)
 
@@ -48,11 +53,9 @@ tags: [backup, sanitize, deploy, migration, github]
 **Exclude (in .gitignore + skip):**
 - `hermes-agent/` (source code, re-installable)
 - `state.db`, `state-snapshots/` (session history)
-- `auth.json`, `auth.lock` (credential pool)
 - `pairing/` (platform pairing records)
 - `weixin/` (WeChat account data)
 - `feishu_seen_message_ids.json`
-- `channel_directory.json`
 - `gateway.lock`, `gateway.pid`, `gateway_state.json`
 - `logs/`, `cache/`, `backups/`, `checkpoints/`
 - `audio_cache/`, `image_cache/`
@@ -60,6 +63,8 @@ tags: [backup, sanitize, deploy, migration, github]
 - `*.db` (CC Switch DB, state DB)
 - `*.lock` files
 - `__pycache__/`, `node_modules/`, `venv/`
+
+**Note**: `auth.json` and `channel_directory.json` are excluded in sanitized mode (contain secrets). In raw mode, include them with original values.
 
 ## Phase 2: Sanitize Secrets
 
@@ -217,8 +222,9 @@ hermes gateway start
 
 **推送到GitHub私有仓库**：
 - SSH key只能push，**不能创建仓库**。创建仓库需要 `gh` CLI 或 PAT token。
-- 如果VPS无gh CLI且无PAT：让用户在GitHub网页手动创建空仓库，然后本地 `git init && git remote add origin git@github.com:USER/REPO.git && git push -u origin main`
-- 已有仓库（如 `gheshang/hermes-backup`）可直接clone+替换内容+force push
+- **已有仓库**：`git clone` → 替换内容 → `git add -A` → `git commit` → `git push --force`
+- **新建仓库**：用户手动在GitHub网页创建空私有仓库 → `git init && git remote add origin git@github.com:USER/REPO.git && git push -f -u origin main`
+- 如果VPS无gh CLI且无PAT：让用户在GitHub网页手动创建空仓库，然后本地 push 即可
 
 ## Quick Commands
 
@@ -235,6 +241,13 @@ cd hermes-backup && bash setup.sh
 
 # Update keys later
 bash set-keys.sh --llm-only
+
+# Raw backup (unsanitized) to NEW repo:
+cd /tmp && rm -rf hermes-backup-raw && mkdir hermes-backup-raw && cd hermes-backup-raw
+git init && git branch -m main && git config user.name "gheshang" && git config user.email "gheshang@users.noreply.github.com"
+git remote add origin git@github.com:gheshang/hermes-full-backup-raw.git
+# (copy files, skip sanitization, verify secrets present)
+git add -A && git commit -m "raw backup $(date +%Y%m%d)" && git push -f -u origin main
 ```
 
 - **PEP 668 handling**: Debian/Ubuntu Bookworm+ blocks `pip install` system-wide. setup.sh uses `pip install --break-system-packages` as fallback for Hindsight install.
@@ -255,8 +268,34 @@ bash set-keys.sh --llm-only
 - **CRITICAL: 禁止用 yaml.dump/json.dumps 重写整个配置文件**: 序列化工具会丢失注释、打乱键值顺序、破坏YAML格式。必须用 `patch`/`sed` 精准替换。修改任何配置文件前必先 `cp` 备份为 `.bak`。
 - **gateway "No messaging platforms enabled" 排查**: 如果 setup.sh 还原后 gateway 启动报此错误，检查 `config.yaml` 的 `platforms` 字段是否为空 `{}`。正确值应包含 `feishu:`/`weixin:` 等平台配置。还原流程可能因 yaml.dump 或手动编辑导致 platforms 段丢失。修复：用 sed/patch 精准插入 platforms 配置，不要重写整个文件。
 - **`gh` CLI 不可用时的 SSH 直推**：VPS 可能未安装 `gh` CLI。SSH key 认证通过 (`ssh -T git@github.com`) 即可直接 `git push`，无需 `gh`。仓库创建需网页手动完成或 PAT。
-- **增量备份 vs 全量重建**：已有仓库可直接 `git clone` → 替换内容 → `git add -A` → `git commit` → `git push`，无需 `rm -rf .git && git init`。全量重建仅用于首次创建或彻底清洗历史。
+- **增量备份 vs 全量重建**：已有仓库可直接 `git clone` → 替换内容 → `git add -A` → `git commit` → `git push`，无需 `rm -rf .git && git init`。全量重建（`rm -rf .git && git init`）用于首次创建或彻底清洗历史。
+- **新建仓库流程**：用户网页创建空私有仓库 → `cd /tmp && rm -rf <repo> && mkdir <repo> && cd <repo> && git init && git branch -m main && git config user.name/email && git remote add origin git@github.com:USER/REPO.git` → 复制文件 → `git add -A && git commit && git push -f -u origin main`。注意：GitHub默认分支为`main`，本地`git init`创建`master`，必须`git branch -m main`。
 - **已跟踪的敏感文件需 `git rm --cached`**：若 `.env` 等敏感文件已被 git 跟踪，删除本地文件后必须 `git rm --cached <file>` 才能从跟踪中移除，否则仍会随 commit 上传。批量处理：`git ls-files | grep -E '^(.env|cron/output|auth\.json|hindsight/)' | xargs git rm --cached`。
 - **必须更新 `.gitignore`**：每次备份前检查 `.gitignore` 是否覆盖所有排除项。新增排除项后需 `git add .gitignore` 一并提交。
 - **额外建议备份项**：`config-backups/`（config 历史快照）、`skills-inventory.md`（技能清单）、`hermes_setup_all.py`（全量安装脚本）、`config.yaml.bak.homechannel`（homechannel 专用配置）。
 - **Python `shutil.copytree` 替代 `cp -r`**：在脚本中批量复制目录时，`shutil.copytree(src, dst, dirs_exist_ok=True)` 比 shell `cp` 更可靠，自动处理权限和符号链接。
+- **Raw (unsanitized) backup**: See `references/raw-backup-workflow.md`. Used when user explicitly requests no sanitization. SSH key cannot create repos — user must create repo manually or provide PAT.
+
+## Raw Backup Workflow (Unsanitized)
+
+**Trigger**: User explicitly says "不脱敏" / "raw backup" / "保留密钥"
+
+### Step-by-Step
+
+1. **Confirm user intent**: "确认：不脱敏推送，所有 API key、Chat ID、Token 均保留原始值，推送到私有仓库。确认？"
+2. **Repo setup**: SSH key can only push, NOT create repos. User must create empty private repo on GitHub web UI first.
+3. **Copy files**: Use `shutil.copytree(src, dst, ignore=lambda d, names: ['.git'] if os.path.basename(d) in ('superpowers','andrej-karpathy-skills','agency-agents-zh','wiki') else ['.git'])` — handles permissions and symlinks reliably.
+4. **Skip sanitization entirely** — do NOT run Phase 2.
+5. **Verify expected secrets are present** (not absent): `grep -c 'sk-' .env config.yaml` should return >0.
+6. **Init + push**: `rm -rf .git && git init && git branch -m main && git config user.name/email && git remote add origin git@github.com:USER/REPO.git && git add -A && git commit -m "..." && git push -f -u origin main`
+7. **Create README.md** with ⚠️ warning about unsanitized secrets.
+8. **Create .gitignore** excluding runtime state files (same as sanitized mode).
+
+### Pitfalls
+
+- **SSH key ≠ repo creation**: `ssh -T git@github.com` authenticates but cannot call GitHub API to create repos. User must create repo manually on web UI.
+- **New repo has default branch**: GitHub creates `main` by default. Local `git init` creates `master`. Must `git branch -m main` before push.
+- **Force push required**: New repo may have README/.gitignore from web UI creation. Use `git push -f` to overwrite.
+- **Never default to raw mode**: Always ask for explicit confirmation. Default is sanitized.
+- **Verify secrets are present**: In raw mode, the check is inverted — confirm secrets ARE there, not absent.
+- **File size**: ~34MB, ~2048 files for full backup.

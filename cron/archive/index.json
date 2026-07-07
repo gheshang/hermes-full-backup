@@ -1,0 +1,47 @@
+{
+  "created": "2026-05-15T10:02:57.943898",
+  "hermes_cron": {
+    "1c98c5dc724d": {
+      "name": "自审-备份快照",
+      "files_count": 7,
+      "latest": "2026-05-15_02-30-49.md",
+      "oldest": "2026-05-08_02-30-37.md"
+    },
+    "7468248ebd6c": {
+      "name": "自审-缓存清理",
+      "files_count": 7,
+      "latest": "2026-05-15_03-04-16.md",
+      "oldest": "2026-05-08_03-03-52.md"
+    },
+    "3cd73a214faf": {
+      "name": "自审-Cron健康检查",
+      "files_count": 8,
+      "latest": "2026-05-15_03-33-58.md",
+      "oldest": "2026-05-07_03-34-39.md"
+    },
+    "5fc150ecaac2": {
+      "name": "自审-Skills+Config检查",
+      "files_count": 8,
+      "latest": "2026-05-15_04-34-30.md",
+      "oldest": "2026-05-07_04-34-18.md"
+    },
+    "ccbda93ef34b": {
+      "name": "自审-Memory检查",
+      "files_count": 8,
+      "latest": "2026-05-15_04-04-34.md",
+      "oldest": "2026-05-07_04-04-26.md"
+    }
+  },
+  "system_crontab": {
+    "lian-zhou-jobs": {
+      "schedule": "0 8 * * *",
+      "files": [
+        "2026-05-11.md",
+        "2026-05-12.md",
+        "cron.log",
+        "history.json"
+      ],
+      "history_json": true
+    }
+  }
+}

@@ -1,7 +1,7 @@
 ---
 name: daily-self-audit
 description: 每日自主审核与优化流程 — 分三层：自动执行（缓存/cron清理）、需确认（memory/skill变更）、砍掉做不到的。cron定时触发，报告+执行合一。
-version: 4.0.0
+version: 5.0.0
 author: 上河一号
 metadata:
  hermes:
@@ -19,18 +19,31 @@ metadata:
 4. **备份优先于二次验证** — 防误删靠快照，不靠LLM自检
 5. **结构优先于语义** — cron场景下只做结构化判断（长度/相同子串/日期），不做语义相似度
 6. **深浅分离** — 每日浅审做结构巡检，每周深度审做语义分析，不在同一个cron里混合
+7. **活动前置检查** — 每个自审cron挂载 `check-yesterday-activity.py` 脚本，检测昨日 feishu/weixin/cli 来源有无用户会话。无用户活动 → 整条自审链跳过，不投递任何消息
 
-## 架构：5个独立Cron任务（v4拆分）
+## 活动前置检查机制（v5 新增）
+
+每个自审 cron 任务在 prompt 头部增加了**跳过前置检查**：
+
+- 脚本位置：`~/.hermes/scripts/check-yesterday-activity.py`
+- 查询目标：`state.db` 的 `sessions` 表，检查昨日（+08 时区）是否有 `source IN ('feishu', 'weixin', 'cli')` 的会话
+- 脚本输出格式：`ACTIVE|昨日(X)有 Y 次用户会话(...)` 或 `INACTIVE|昨日(X)无用户活动，仅为自动任务`
+- cron 机制：脚本 stdout 注入 agent prompt 上下文作为 [Script Output]
+- 跳过表现：agent 读到 INACTIVE 后输出 `[SILENT]`，系统不投递任何消息到飞书
+- **cron 自产的活动不计为"使用"**：只认 feishu/weixin/cli 来源，cron/subagent 自动任务不计入
+- 手动 `cronjob run` 执行时仍然会跑脚本检测，**但手动执行不应被跳过**——如果手动触发需要绕过检查，直接不带 script 参数创建一次性任务
+
+## 架构：5个独立Cron任务（v4 拆分 + v5 活动检测）
 
 旧版单cron任务因prompt过重（7维度扫描+反向验证+逐一skill_view），导致模型在时限内跑不完，连续3天空输出失败。v4拆为5个独立cron，每个只干一件事，失败不连坐。
 
-| 时间 | 任务名 | 工具集 | 职责 |
-|------|--------|--------|------|
-| 02:30 | 自审-备份快照 | terminal | cp备份文件，纯shell |
-| 02:35 | 自审-缓存清理 | terminal | find -delete，纯shell |
-| 02:40 | 自审-Cron健康检查 | terminal | 读cron状态+日志，判断error类型 |
-| 02:45 | 自审-Memory检查 | terminal+skill | 读MEMORY.md/USER.md+容量计算+自动压缩 |
-| 02:50 | 自审-Skills+Config检查 | terminal+skill | 查skill文件存在性+配置审计 |
+| 时间 | 任务名 | 工具集 | script | 职责 |
+|------|--------|--------|--------|------|
+| 02:30 | 自审-备份快照 | terminal | check-yesterday-activity.py | cp备份文件，纯shell |
+| 03:03 | 自审-缓存清理 | terminal | check-yesterday-activity.py | find -delete，纯shell |
+| 03:33 | 自审-Cron健康检查 | terminal | check-yesterday-activity.py | 读cron状态+日志，判断error类型 |
+| 04:03 | 自审-Memory检查 | terminal+skill | check-yesterday-activity.py | 读MEMORY.md/USER.md+容量计算+自动压缩 |
+| 04:33 | 自审-Skills+Config检查 | terminal+skill | check-yesterday-activity.py | 查skill文件存在性+配置审计 |
 
 关键设计：
 - 前2个纯shell，几乎不可能失败
@@ -159,12 +172,9 @@ find ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf 
   - 若 `.bak` 不存在，提醒用户手动创建备份：`cp config.yaml config.yaml.bak`
 - 不做语义偏移分析（cron场景下无参照）
 
-#### 2.4 Hindsight 一致性检查
-- 对 MEMORY.md 中的每条关键事实，用 `hindsight_recall` 搜索是否有冲突记录
-- 如果 hindsight 中存在更新/矛盾的记录 → 标记"待同步"
-- 如果 MEMORY.md 中有过时信息但 hindsight 中有更新版 → 建议用 hindsight 版本替换
-- **不自动执行**（hindsight 是长期记忆，替换需用户确认）
-- Hindsight 模块不可用时 → 跳过并在报告中提醒用户检查
+#### 2.4 Hindsight 一致性检查（已废弃）
+
+Hindsight 已于 2026-06-23 完全卸载（Python 包、配置/数据目录、pg0 PostgreSQL 实例、CLI 二进制、skill 均已删除）。此检查项不再执行。若将来需要第三方长期记忆系统，可重新部署后恢复此节。
 
 ### Layer 3：已砍掉（不做，别装能做到）
 
@@ -207,6 +217,7 @@ find ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf 
 
 - YAML缩进修复、cron投递报错排查、config对比方法 → 见"已知陷阱"#5/#6
 - **memory工具操作陷阱** → 见"已知陷阱"#9，详情见 `references/memory-tool-pitfall.md`
+- **自审结果执行陷阱** → 见"已知陷阱"#10/#11，详情见 `references/self-audit-execution-pitfall.md`
 - **关键补充**：排查cron投递报错时，先确认任务本身`last_status`是否ok——任务执行和投递是两个独立环节，任务成功但投递失败≠任务逻辑有问题
 ```
 
@@ -221,18 +232,22 @@ find ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf 
 7. **write_file覆盖MEMORY.md/USER.md前必须备份** — write_file是全量覆盖，内容丢失无法撤销。修改这些文件前先`cp 为.bak`
 8. **Cron输出目录孤儿残留** — `~/.hermes/cron/output/<job_id>/` 目录可能因任务删除而残留。清理时需对比活跃任务ID列表，不在列表中的目录为孤儿。删除前检查最近日志日期确认无近期活动。
 9. **memory工具remove/replace的substring匹配陷阱** — `memory action=remove/replace` 用`old_text`子串匹配，短文本可能误伤含相同子串的其他条目。批量操作时**禁止用memory工具**，改用`write_file`直接覆盖`~/.hermes/memories/MEMORY.md`全量写入。压缩前先`cp`备份。
+10. **自审结果未落地为文件** — 自审cron的输出只存在于session历史中，没有持久化到文件。用户要求"查看自审记录"时需通过`session_search`检索，而非直接读文件。**修复方案**：自审cron任务应在`~/.hermes/cron/output/`中输出结构化报告文件（如`audit-YYYY-MM-DD.md`），便于后续查阅和交叉验证。
+11. **执行自审建议前必须先读完整审计结果** — 自审cron输出的建议列表（如"MEMORY.md第一条需精简"）必须完整读取后再行动，不能凭记忆或部分印象就批量操作。本次事故：自审只点名MEMORY.md第一条+OpenCode CLI重复，但代理擅自精简了USER.md的4条。**规则**：自审报告中的每一条建议都要逐项核对，未提及的条目不得修改。
+12. **自审结果执行边界** — 自审报告只点名N条，就是硬边界。超出边界=越权。宁可保守，不可越界。恢复误改条目时，需对照自审原始报告逐项确认，不能凭印象恢复。
+13. **活动检测脚本的 INACTIVE 是全链跳过** — 任何一个自审 cron 如果读到 INACTIVE，整个 5 任务链当天全部跳过（每个任务各自检测，不依赖上游结果）。这意味着如果用户只在 02:30 之后使用了系统，备份快照可能被跳过但其他任务正常执行。要看"昨天到底有没有使用"，直接跑 `python3 ~/.hermes/scripts/check-yesterday-activity.py` 看输出
 
 ## Cron拆分架构（v4 更新）
 
 **核心教训**：单一大型 cron 任务（7维度全量扫描+反向验证）会导致模型超时空输出。拆为多个小任务，失败不连坐。
 
-| 时间 | 任务 | 工具集 | 干什么 |
-|------|------|--------|--------|
-| 02:30 | 自审-备份快照 | terminal | cp 文件，纯 shell |
-| 02:35 | 自审-缓存清理 | terminal | find -delete，纯 shell |
-| 02:40 | 自审-Cron健康检查 | terminal | 读 cron 状态 + 日志 |
-| 02:45 | 自审-Memory检查 | terminal + skill | 读文件 + 容量计算 + 压缩 |
-| 02:50 | 自审-Skills+Config检查 | terminal + skill | 查 skill 文件存在性 + 配置 |
+| 时间 | 任务 | 工具集 | script | 干什么 |
+|------|------|--------|--------|--------|
+| 02:30 | 自审-备份快照 | terminal | check-yesterday-activity.py | cp 文件，纯 shell |
+| 03:03 | 自审-缓存清理 | terminal | check-yesterday-activity.py | find -delete，纯 shell |
+| 03:33 | 自审-Cron健康检查 | terminal | check-yesterday-activity.py | 读 cron 状态 + 日志 |
+| 04:03 | 自审-Memory检查 | terminal + skill | check-yesterday-activity.py | 读文件 + 容量计算 + 压缩 |
+| 04:33 | 自审-Skills+Config检查 | terminal + skill | check-yesterday-activity.py | 查 skill 文件存在性 + 配置 |
 
 - 所有任务 deliver 到飞书（`feishu`），用户在飞书机器人查看结果
 - 每个 prompt 尽量写死 bash 命令，减少 LLM 决策量

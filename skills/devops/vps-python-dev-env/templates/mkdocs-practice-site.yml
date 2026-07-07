@@ -1,0 +1,52 @@
+# mkdocs.yml — Python-100-Days practice site
+# Usage:
+#   mkdir -p ~/python-practice/site
+#   cp this file ~/python-practice/site/mkdocs.yml
+#   cd ~/python-practice/site && mkdocs build
+# Generated site goes to ~/python-practice/site/site/
+
+site_name: Python 100 天练习
+site_url: ''
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - toc.follow
+    - navigation.top
+    - content.code.copy
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到暗色模式
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到亮色模式
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - codehilite
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jackfrued/Python-100-Days
+
+# Point docs_dir to the cloned repo
+docs_dir: ../python-100-days
+strict: false

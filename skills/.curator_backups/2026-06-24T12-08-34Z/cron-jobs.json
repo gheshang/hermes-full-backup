@@ -1,0 +1,255 @@
+{
+  "jobs": [
+    {
+      "id": "1c98c5dc724d",
+      "name": "\u81ea\u5ba1-\u5907\u4efd\u5feb\u7167",
+      "prompt": "\u6267\u884c\u6bcf\u65e5\u5907\u4efd\u5feb\u7167\uff1a\n```bash\nDATE=$(date +%Y-%m-%d)\nmkdir -p ~/.hermes/backups/$DATE\ncp ~/.hermes/memories/MEMORY.md ~/.hermes/backups/$DATE/MEMORY.md 2>/dev/null\ncp ~/.hermes/memories/USER.md ~/.hermes/backups/$DATE/USER.md 2>/dev/null\ncp -r ~/.hermes/skills/ ~/.hermes/backups/$DATE/skills/ 2>/dev/null\ncp ~/.hermes/config.yaml ~/.hermes/backups/$DATE/config.yaml 2>/dev/null\ncp ~/.hermes/SOUL.md ~/.hermes/backups/$DATE/SOUL.md 2>/dev/null\necho \"\u5907\u4efd\u5b8c\u6210: ~/.hermes/backups/$DATE/\"\nls -la ~/.hermes/backups/$DATE/ 2>/dev/null\n```\n\u8f93\u51fa\u5907\u4efd\u7ed3\u679c\u5373\u53ef\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 2 * * *",
+        "display": "30 2 * * *"
+      },
+      "schedule_display": "30 2 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 51
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:30:58.183864+08:00",
+      "next_run_at": "2026-06-25T02:30:00+08:00",
+      "last_run_at": "2026-06-24T02:31:04.741368+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "7468248ebd6c",
+      "name": "\u81ea\u5ba1-\u7f13\u5b58\u6e05\u7406",
+      "prompt": "\u6267\u884c\u7f13\u5b58\u548c\u78c1\u76d8\u6e05\u7406\uff1a\n```bash\necho \"=== \u78c1\u76d8\u4f7f\u7528 ===\"\ndf -h / | tail -1\n\necho \"=== uv\u7f13\u5b58 ===\"\ndu -sh ~/.cache/uv/ 2>/dev/null\n\necho \"=== uv .tmp\u6b8b\u7559\u6e05\u7406 ===\"\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d 2>/dev/null | wc -l\ndu -sh ~/.cache/uv/.tmp* 2>/dev/null | tail -1\nfind ~/.cache/uv -maxdepth 1 -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\necho \"tmp cleaned\"\n\necho \"=== uv\u7f13\u5b58\u8d85\u9650\u68c0\u67e5(>2GB) ===\"\nbash ~/.hermes/scripts/uv-cache-guard.sh\n\necho \"=== Hermes\u7f13\u5b58 ===\"\ndu -sh ~/.hermes/audio_cache/ ~/.hermes/image_cache/ ~/.hermes/cron/output/ 2>/dev/null\nfind ~/.hermes/audio_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/image_cache/ -mtime +7 -delete 2>/dev/null\nfind ~/.hermes/cron/output/ -mtime +7 -delete 2>/dev/null\n\necho \"=== \u8fc7\u671f\u5907\u4efd\u6e05\u7406(>15\u5929) ===\"\nfind ~/.hermes/backups/ -mindepth 1 -maxdepth 1 -mtime +15 -type d -exec rm -rf {} + 2>/dev/null\nls -d ~/.hermes/backups/*/ 2>/dev/null\n\necho \"=== \u6700\u7ec8\u78c1\u76d8 ===\"\ndf -h / | tail -1\n```\n\u8f93\u51fa\u6e05\u7406\u7ed3\u679c\u5373\u53ef\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "3 3 * * *",
+        "display": "3 3 * * *"
+      },
+      "schedule_display": "3 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 50
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:31:30.926982+08:00",
+      "next_run_at": "2026-06-25T03:03:00+08:00",
+      "last_run_at": "2026-06-24T03:04:12.291299+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "3cd73a214faf",
+      "name": "\u81ea\u5ba1-Cron\u5065\u5eb7\u68c0\u67e5",
+      "prompt": "\u68c0\u67e5\u6240\u6709cron\u4efb\u52a1\u5065\u5eb7\u72b6\u51b5\uff1a\n1. \u7528 terminal \u6267\u884c `hermes cron list --json 2>/dev/null` \u83b7\u53d6\u4efb\u52a1\u5217\u8868\n2. \u5bf9\u6bcf\u4e2a\u4efb\u52a1\u68c0\u67e5 last_status\uff1a\n   - \u5982\u679c\u662f error\uff0c\u8bfb\u53d6 ~/.hermes/cron/output/<job_id>/ \u6700\u8fd1\u65e5\u5fd7\uff0c\u5224\u65ad\u9519\u8bef\u7c7b\u578b\n   - \u8fde\u7eed error \u7684\u4efb\u52a1\u52a0\u7c97\u544a\u8b66\n3. \u68c0\u67e5 next_run_at \u662f\u5426\u5408\u7406\uff08\u4e0d\u5728\u8fc7\u53bb\u3001\u4e0d\u57281\u5e74\u540e\uff09\n4. \u4e00\u6b21\u6027\u4efb\u52a1\u4e14 next_run \u5df2\u8fc7\u671f\u7684\uff0c\u6807\u8bb0\u53ef\u5220\u9664\n\n\u8f93\u51fa\u7b80\u6d01\u5065\u5eb7\u62a5\u544a\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "33 3 * * *",
+        "display": "33 3 * * *"
+      },
+      "schedule_display": "33 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 49
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:32:08.250590+08:00",
+      "next_run_at": "2026-06-25T03:33:00+08:00",
+      "last_run_at": "2026-06-24T03:37:27.788974+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "ccbda93ef34b",
+      "name": "\u81ea\u5ba1-Memory\u68c0\u67e5",
+      "prompt": "\u52a0\u8f7d daily-self-audit skill\uff0c\u6309 Layer 2.1 \u7684 Memory \u5ba1\u8ba1\u89c4\u5219\u6267\u884c\uff1a\n1. \u8bfb\u53d6 ~/.hermes/memories/MEMORY.md \u548c USER.md\n2. \u8ba1\u7b97\u5bb9\u91cf\u5360\u6bd4\uff08MEMORY 2200\u4e0a\u9650\uff0cUSER 1375\u4e0a\u9650\uff09\n3. MEMORY > 80% \u65f6\u89e6\u53d1\u81ea\u52a8\u538b\u7f29\uff08\u6309skill\u4e2d\u7684\u7ed3\u6784\u5316\u89c4\u5219\uff1a>300\u5b57\u538b\u7f29\u3001\u76f8\u540c\u5b50\u4e32>40\u5b57\u5408\u5e76\u3001\u8fc7\u671f>14\u5929\u79fb\u9664\uff09\n4. MEMORY \u2264 80% \u65f6\u53ea\u62a5\u5efa\u8bae\n5. USER.md \u53ea\u62a5\u5efa\u8bae\uff0c\u4e0d\u81ea\u52a8\u64cd\u4f5c\n\n\u8f93\u51fa Memory \u5ba1\u8ba1\u62a5\u544a\uff0c\u5217\u51fa\u5df2\u81ea\u52a8\u538b\u7f29\u7684\u6761\u76ee\u548c\u5efa\u8bae\u64cd\u4f5c\u3002",
+      "skills": [
+        "daily-self-audit"
+      ],
+      "skill": "daily-self-audit",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "3 4 * * *",
+        "display": "3 4 * * *"
+      },
+      "schedule_display": "3 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 49
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:33:20.553265+08:00",
+      "next_run_at": "2026-06-25T04:03:00+08:00",
+      "last_run_at": "2026-06-24T04:05:25.335119+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "5fc150ecaac2",
+      "name": "\u81ea\u5ba1-Skills+Config\u68c0\u67e5",
+      "prompt": "\u52a0\u8f7d daily-self-audit skill\uff0c\u6309 Layer 2.2/2.3 \u6267\u884c Skills \u548c\u914d\u7f6e\u5ba1\u8ba1\uff1a\n\nSkills \u5ba1\u8ba1\uff08\u7ed3\u6784\u68c0\u67e5\uff0c\u4e0d\u9010\u4e00 skill_view \u6df1\u5ea6\u5ba1\uff09\uff1a\n1. \u7528 terminal \u6267\u884c `hermes skills list` \u83b7\u53d6\u5217\u8868\n2. \u53ea\u68c0\u67e5 local skills \u7684 SKILL.md \u662f\u5426\u5b58\u5728\u4e14\u975e\u7a7a\uff08\u7528 read_file \u6216 cat\uff09\n3. \u6807\u8bb0 SKILL.md \u7f3a\u5931\u6216\u4e3a\u7a7a\u7684 skill\n\n\u914d\u7f6e\u5ba1\u8ba1\uff1a\n1. \u68c0\u67e5 ~/.hermes/SOUL.md \u662f\u5426\u5b58\u5728\u4e14\u975e\u7a7a\n2. \u68c0\u67e5 ~/.hermes/config.yaml \u4e2d\u662f\u5426\u6709\u542b \"deprecated\" \u7684\u6a21\u578b\u914d\u7f6e\n\n\u8f93\u51fa\u7b80\u6d01\u68c0\u67e5\u62a5\u544a\u3002",
+      "skills": [
+        "daily-self-audit"
+      ],
+      "skill": "daily-self-audit",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "33 4 * * *",
+        "display": "33 4 * * *"
+      },
+      "schedule_display": "33 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 49
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:34:02.662305+08:00",
+      "next_run_at": "2026-06-25T04:33:00+08:00",
+      "last_run_at": "2026-06-24T04:35:26.638279+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "chat_name": "oc_701e6311a70e35ad9ec9aebd390db671",
+        "thread_id": null
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "fire_claim": null
+    },
+    {
+      "id": "1ccb12cecce1",
+      "name": "weekly-cache-cleanup",
+      "prompt": "\u6267\u884c\u6bcf\u5468\u7f13\u5b58\u6e05\u7406\uff1a\n1. \u8fd0\u884c uv \u7f13\u5b58\u76d1\u63a7\u811a\u672c: bash ~/.hermes/scripts/uv-cache-guard.sh\n2. pip cache purge\n3. npm cache clean --force\n4. \u5220\u9664 uv .tmp \u6b8b\u7559: find ~/.cache/uv -name \".tmp*\" -type d -exec rm -rf {} + 2>/dev/null\n5. \u68c0\u67e5 Playwright \u65e7\u7248\u672c\uff1a\u5f53\u524d\u4f7f\u7528\u7684\u662f chromium-1217 \u548c chromium_headless_shell-1217\uff0c\u5220\u9664 ~/.cache/ms-playwright/ \u4e0b\u5176\u4ed6\u7248\u672c\u76ee\u5f55\uff08\u4fdd\u7559 1217 \u548c ffmpeg\uff09\n6. \u62a5\u544a\u6e05\u7406\u524d\u540e\u7684\u78c1\u76d8\u4f7f\u7528\u7387 (df -h /)\n\n\u7528 terminal \u5de5\u5177\u9010\u6761\u6267\u884c\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * 0",
+        "display": "0 3 * * 0"
+      },
+      "schedule_display": "0 3 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 5
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T21:08:18.937072+08:00",
+      "next_run_at": "2026-06-28T03:00:00+08:00",
+      "last_run_at": "2026-06-21T03:01:30.941318+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": null,
+      "enabled_toolsets": [
+        "terminal"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-24T04:35:26.639944+08:00"
+}

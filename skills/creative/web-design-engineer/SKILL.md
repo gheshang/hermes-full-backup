@@ -405,3 +405,4 @@ Complete the following before considering the work delivered (all items must pas
 ## Further Reference
 
 - [references/advanced-patterns.md](references/advanced-patterns.md) — Full code template library (slide engine, device frames, Tweaks panel, animation timeline, design canvas, dark mode, visualization, oklch color system, font recommendations)
+- [references/markdown-to-html.md](references/markdown-to-html.md) — Markdown → HTML tutorial/documentation rendering with sidebar TOC and the TOC ID alignment pitfall

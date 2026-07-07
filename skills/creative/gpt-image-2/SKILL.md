@@ -77,6 +77,27 @@ node skills/gpt-image-2/scripts/check-mode.js --json
 3. 附一句简短的"如何使用"建议（如：丢进 ChatGPT / Midjourney / DALL·E / Sora / Nano Banana / 自己后端 / 第三方 GPT Image 2 网关）。
 4. **不要假装出图成功**。明确告知用户："已生成可直接复用的高质量 prompt，请用你的图像工具执行。"
 
+### Mode D · 直接 API 调用（工具不可用但有 API Key）
+
+**触发条件**：未启用 Garden，宿主无 `image_generate` 工具，但 `config.yaml` 或环境变量中配置了 OpenAI 兼容的图像 API（如 SenseNova、DeepSeek、Moonshot）。
+
+**识别信号**：
+- `hermes tools` 列表中没有 `image_generate` / `imagegen` / `dalle` / `nano_banana`
+- `grep 'image:' ~/.hermes/config.yaml` 显示 `base_url` 和 `api_key`
+- 环境变量中有 `OPENAI_IMAGE_API_KEY` 或 `SENSENOVA_API_KEY` 等
+
+**行为**：
+1. 从 `config.yaml` 或环境变量提取 API 配置（`base_url`、`model`、`api_key`）。
+2. 使用 `curl` 或 Python `requests` 直接调用 `/v1/images/generations` 端点。
+3. 优先使用 `response_format: "b64_json"` 获取 base64 数据，避免 URL 签名过期。
+4. 将图片保存到 `garden-gpt-image-2/image/`。
+5. **详细参考**：`references/direct-api-usage.md`
+
+**⚠️ 关键陷阱**：
+- **尺寸限制**：第三方 API 支持的尺寸可能与 OpenAI 不同（见 `references/sensenova-api.md`）。
+- **模型名**：使用提供商指定的模型 ID（如 `sensenova-u1-fast`），而非 `gpt-image-2`。
+- **速率限制**：直接调用可能触发更严格的配额限制。
+
 ---
 
 ## ⚠️ 关键陷阱（必读）
@@ -122,12 +143,26 @@ OpenAI 标准尺寸（`1024x1024`, `1024x1792` 等）在第三方 API 上可能�
 | `ENABLE_GARDEN_IMAGEGEN=1` + 有 KEY | **A** | ✅ `generate.js` / `edit.js` | ✅ 自动 | ✅ 自动 |
 | `ENABLE_GARDEN_IMAGEGEN=1` 但没 KEY | A? | ❌（先要 KEY） | — | — |
 | 未启用 + 宿主有图像工具 | **B** | ❌（用宿主工具） | 可选 | 由宿主决定 |
-| 未启用 + 宿主无图像工具 | **C** | ❌ | ✅ 必须 | ❌（无法） |
+| 未启用 + 宿主无图像工具 + 有 API Key | **D** | ❌（用 `curl`/Python 直接调用） | ✅ 推荐 | ✅ 自动 |
+| 未启用 + 宿主无图像工具 + 无 API Key | **C** | ❌ | ✅ 必须 | ❌（无法） |
+| 用户要求"可编辑"或"对比版本" | **E** | ❌（生成 HTML+SVG） | ✅ 推荐 | ✅ 自动 |
+
+### Mode E · HTML+SVG 代码生成
+
+**触发条件**：用户明确要求"可编辑版本"、"对比两版"、"HTML 版"等。
+
+**行为**：
+1. 按模板编写 HTML 文件，使用内联 SVG 绘制图形
+2. 文字使用 HTML 元素（非 SVG text），确保 100% 清晰
+3. 使用 CSS 变量定义语义化配色（cyan/emerald/violet/amber/rose）
+4. 保存为 `.html` 文件，用户可用浏览器打开或转换为 PNG
+5. **详细参考**：`references/html-svg-infographics.md`
 
 ### 模式不确定时
 
 - 如果你判断不清自己是 B 还是 C，**直接问用户一句**："是用你环境里的图像工具出图，还是只要我写好提示词？"
-- Mode A 调脚本失败（401 / 网络 / 配额）→ 报错并询问"切到 B / C 吗？"
+- Mode A 调脚本失败（401 / 网络 / 配额）→ 报错并询问"切到 B / C / D 吗？"
+- 怀疑有 Mode D（直接 API）但没工具 → 检查 `config.yaml` 的 `image:` 配置和 `hermes tools` 列表。
 
 ## 用户输入工具
 
@@ -159,12 +194,13 @@ OpenAI 标准尺寸（`1024x1024`, `1024x1792` 等）在第三方 API 上可能�
 
 核心变量：
 
-- `ENABLE_GARDEN_IMAGEGEN` — **模式开关**。`1` / `true` / `yes` / `on` 时启用 Mode A；未设置或其它值则进入 Mode B / C。
-- `OPENAI_API_KEY` — Mode A 必需；B / C 不需要。
+- `ENABLE_GARDEN_IMAGEGEN` — **模式开关**。`1` / `true` / `yes` / `on` 时启用 Mode A；未设置或其它值则进入 Mode B / C / D。
+- `OPENAI_API_KEY` — Mode A 必需；B / C / D 不需要（D 可能使用 `OPENAI_IMAGE_API_KEY`）。
 - `OPENAI_BASE_URL` — 默认 `https://api.openai.com/v1`，可指向第三方兼容网关。
 - `OPENAI_IMAGE_MODEL` — 默认 `gpt-image-2`，可换成网关支持的型号（如 `gpt-image-1` / `dall-e-3` / `sensenova-u1-fast`）。
 - `OPENAI_IMAGE_BASE_URL` — 第三方图像 API 地址（如 SenseNova）。
-- `OPENAI_IMAGE_API_KEY` — 第三方图像 API 密钥。
+- `OPENAI_IMAGE_API_KEY` — 第三方图像 API 密钥（Mode D 使用）。
+- `SENSENOVA_API_KEY` — SenseNova 专用密钥（Mode D 使用）。
 
 > ⚠️ **第三方 API 尺寸限制**：使用 `OPENAI_IMAGE_BASE_URL` 时，支持的尺寸可能与 OpenAI 不同。先查 `references/provider-quirks.md` 或运行探测脚本确认。
 
@@ -231,7 +267,9 @@ Mode B 由宿主图像工具决定保存方式；Mode C 不产生图片。
 node skills/gpt-image-2/scripts/check-mode.js
 ```
 
-输出会告诉你当前是 Mode A / B / C，决定后续是否调用 `generate.js` / `edit.js`。下面 1~4 仅在 **Mode A** 下使用。
+输出会告诉你当前是 Mode A / B / C / D，决定后续是否调用 `generate.js` / `edit.js` 或直接使用 `curl`/Python。下面 1~4 仅在 **Mode A** 下使用。
+
+**Mode D 检测**：如果 `check-mode.js` 返回 Mode C，但 `grep 'image:' ~/.hermes/config.yaml` 显示有 `base_url` 和 `api_key`，则实际可用 Mode D（直接 API 调用）。
 
 ### 1. 文本生图（Mode A）
 
@@ -266,12 +304,13 @@ node skills/gpt-image-2/scripts/edit.js \
   --prompt "Replace only the masked area with a glass vase"
 ```
 
-### 5. Mode B / C 的"用法"
+### 5. Mode B / C / D 的"用法"
 
 没有命令行入口——本 Skill 此时只是**提示词工程指南**：
 
 - **Mode B**：渲染好最终 prompt → 调用宿主自带的 `image_generation` 类工具（参数中传入 prompt）→ 拿到图。
 - **Mode C**：渲染好最终 prompt → 保存到 `garden-gpt-image-2/prompt/<task-slug>-<timestamp>.md` → 把内容直接展示给用户 → 提示用户在哪些图像工具中可以直接复用。
+- **Mode D**：渲染好最终 prompt → 从 `config.yaml` 或环境变量提取 API 配置 → 用 `curl` 或 Python `requests` 直接调用 `/v1/images/generations` → 保存 base64 图片到 `garden-gpt-image-2/image/`。参考 `references/direct-api-usage.md`。
 
 ## JSON 模板工作方式
 
@@ -515,6 +554,8 @@ CS / CV / ML 方向：
 - `sensenova-api.md` — SenseNova U1 Fast 图像生成 API（尺寸限制、配置示例）
 - `edge-tts-chinese.md` — Edge TTS 中文语音合成（免费、无需 API Key）
 - `feishu-media-limitations.md` — 飞书 MEDIA 协议限制及规避方案
+- `direct-api-usage.md` — **工具不可用时的直接 API 调用方案**（cURL/Python）
+- `html-svg-infographics.md` — **HTML+SVG 信息图生成指南**（可编辑、可缩放替代方案）
 
 ## 提示词工作流（模式感知）
 
@@ -532,6 +573,9 @@ CS / CV / ML 方向：
 7-A. **Mode A**：把最终 prompt 保存到 `garden-gpt-image-2/prompt/`，调用 `scripts/generate.js` 或 `scripts/edit.js`，图片落到 `garden-gpt-image-2/image/`。
 7-B. **Mode B**：把最终 prompt 直接传给宿主的图像工具调用；按需保存 prompt 副本到 `garden-gpt-image-2/prompt/`。
 7-C. **Mode C**：把最终 prompt 保存到 `garden-gpt-image-2/prompt/<task-slug>-<timestamp>.md`，并把完整 prompt 在对话中展示给用户，附一句简短的"如何使用 / 推荐工具"建议。
+7-D. **Mode D**：把最终 prompt 保存到 `garden-gpt-image-2/prompt/`，从 `config.yaml` 或环境变量提取 API 配置，用 `curl` 或 Python 直接调用 `/v1/images/generations`，图片落到 `garden-gpt-image-2/image/`。参考 `references/direct-api-usage.md`。
+
+7-E. **HTML+SVG 替代方案**：当用户要求"可编辑"或"对比版本"时，生成 HTML+内联 SVG 文件。参考 `references/html-svg-infographics.md`。
 
 8. 任务结束后用一句话告诉用户：当前模式是什么、prompt 落在哪、图（如有）落在哪。
 
@@ -549,6 +593,60 @@ CS / CV / ML 方向：
 - 编辑脚本使用 multipart form data
 - 响应优先按 `data[0].b64_json` 解析，也兼容 `data[0].url`
 - 除非上游接口明确要求，不额外引入特殊 query 参数
+
+仅 Mode D 适用：
+
+- 使用 `curl` 或 Python `requests` 直接调用 API
+- **必须使用 `response_format: "b64_json"`** 避免 URL 签名过期
+- 尺寸必须匹配提供商支持列表（见 `references/sensenova-api.md`）
+- 模型名使用提供商指定 ID（如 `sensenova-u1-fast`），而非 `gpt-image-2`
+- 参考 `references/direct-api-usage.md` 获取完整调用模板
+
+仅 HTML+SVG 适用：
+
+- 编写 HTML 文件，使用内联 SVG 绘制图形
+- 文字使用 HTML 元素，确保 100% 清晰
+- 使用 CSS 变量定义语义化配色
+- 参考 `references/html-svg-infographics.md` 获取模板和最佳实践
+
+## 双版本输出模式（新增）
+
+当用户要求"对比"或"两版都保留"时，采用双版本策略：
+
+1. **AI 生成版 (PNG)**：使用 Mode D 直接调用 SenseNova/第三方 API，适合视觉丰富、光影自然的场景
+2. **代码生成版 (HTML+SVG)**：编写 HTML+内联 SVG，适合文字密集、可编辑、可缩放的场景
+
+**决策矩阵**：
+
+| 场景 | 推荐版本 | 理由 |
+|------|----------|------|
+| 文档嵌入 | PNG | 视觉效果好，Markdown 原生支持 |
+| 网页展示 | HTML+SVG | 可编辑、可缩放、文件小 |
+| 演示/打印 | PNG | 渲染一致，无需浏览器 |
+| 开发/迭代 | HTML+SVG | 代码可改，即时反馈 |
+
+**HTML+SVG 模板位置**：`references/html-svg-templates/`（新增）
+
+---
+
+## Mode D 检测流程（新增）
+
+当 `check-mode.js` 返回 Mode C 时，执行以下检测判断是否可用 Mode D：
+
+```bash
+# 1. 检查 hermes tools 列表
+hermes tools 2>/dev/null | grep -i "image"
+
+# 2. 检查 config.yaml 的 image 配置
+grep -A5 "image:" ~/.hermes/config.yaml
+
+# 3. 检查环境变量
+env | grep -iE "OPENAI_IMAGE|SENSENOVA|IMAGE_API"
+```
+
+**判定规则**：
+- `hermes tools` 无 `image_generate` + `config.yaml` 有 `image.base_url` 和 `image.api_key` → **Mode D 可用**
+- 无 `image_generate` + 无 config 配置 → **Mode C（纯提示词顾问）**
 
 ## 何时提问
 
